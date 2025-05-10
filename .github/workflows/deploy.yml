@@ -50,7 +50,7 @@ jobs:
         cd "$REPO_DIR/simple-web-server"
         npm install
 
-        cd ~/github-aws-ec2/simple-web-server
+        cd ~/marquee-rental-webapp/simple-web-server
         git pull origin main
         npm install
 
