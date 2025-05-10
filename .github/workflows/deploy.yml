@@ -47,10 +47,10 @@ jobs:
           cd "$REPO_DIR"
         fi
 
-        cd "$REPO_DIR/simple-web-server"
+        cd "$REPO_DIR/backend"
         npm install
 
-        cd ~/marquee-rental-webapp/simple-web-server
+        cd ~/marquee-rental-webapp/backend
         git pull origin main
         npm install
 
