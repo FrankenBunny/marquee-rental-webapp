@@ -7,9 +7,6 @@ WORKDIR /app
 # Copy package.json and package-lock.json first
 COPY package*.json ./
 
-# Clear npm cache to avoid "idealTree" error
-RUN npm cache clean --force
-
 # Install dependencies
 RUN npm install
 

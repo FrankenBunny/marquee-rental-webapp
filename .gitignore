@@ -1,3 +1,4 @@
-backend/node_modules/
+backend/api/node_modules/
+backend/api/.backend.env
 .DS_Store
 .env
