@@ -2,7 +2,12 @@ const express = require('express');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.SERVER_PORT || 1234;
+const port = process.env.SERVER_PORT;
+
+if (!port) {
+  console.error('Error: SERVER_PORT environment variable is not set.');
+  process.exit(1);
+}
 
 // Routes
 const userRoutes = require('./routes/marquee_user')

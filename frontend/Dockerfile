@@ -11,7 +11,10 @@ COPY package*.json ./
 RUN npm install
 
 # Copy rest of the app
-COPY . .
+COPY server.js ./
+COPY pages/ ./pages/
+COPY css/ ./css/
+COPY js/ ./js/
 
 # Start the application
 CMD ["npm", "start"]
