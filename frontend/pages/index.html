@@ -6,17 +6,26 @@
     <title>User list</title>
 </head>
 <body>
+    <script>
+        console.log("suck a dick")
+    </script>
+
+
+    <script src="/config.js"></script>
     <script src="./js/fetch-data.js"></script>
     <script src="./js/component/populate-usertable.js"></script>
     <script>
         fetchData('user').then(data => {
+        console.log('User data:', data);
         if (data) {
             populateUsersTable(data);
+            console.log("worked fine");
         } else {
             document.getElementById('loadingMessage').innerText = 'Failed to load users';
         }
         });
     </script>
+
     <h1>User List</h1>
     <p id="loadingMessage">Loading users...</p>
     <table id="usersTable">

@@ -3,25 +3,35 @@ const path = require('path');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.FRONTEND_PORT || 3000;
+const port = process.env.FRONTEND_PORT;
 
-// Serve static frontend files
-app.use(express.static(path.join(__dirname, 'public')));
+if (!port) {
+  console.error('Error: FRONTEND_PORT environment variable is not set.');
+  process.exit(1);
+}
 
-// Serve environment variables as a JS file
+app.use(express.static('pages'));
+app.use(express.static('css'));
+app.use(express.static('js'));
+
 app.get('/config.js', (req, res) => {
   res.set('Content-Type', 'application/javascript');
   res.send(`
     window.env = {
       API_URL: "${process.env.API_URL}",
-      API_KEY: "${process.env.API_KEY}"
     };
   `);
 });
 
-// Fallback to index.html for any other route
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public/index.html'));
+console.log(path.join(__dirname, 'pages/index.html'));
+
+app.get('/{*any}', (req, res) => {
+  res.sendFile(path.join(__dirname, 'pages/index.html'), (err) => {
+    if (err) {
+      console.error('Error sending index.html:', err);
+      res.status(500).send('Internal Server Error');
+    }
+  });
 });
 
 app.listen(PORT, () => {

@@ -2,17 +2,19 @@ const express = require('express');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.SERVER_PORT || 1234;
+const port = process.env.SERVER_PORT;
 
-// Middleware
-const apiKeyAuth = require('./middleware/apiKeyAuth');
+if (!port) {
+  console.error('Error: SERVER_PORT environment variable is not set.');
+  process.exit(1);
+}
 
 // Routes
 const userRoutes = require('./routes/marquee_user')
 
 app.use(express.json());
 
-app.use('/api', apiKeyAuth, userRoutes);
+app.use('/api', userRoutes);
 
 
 app.listen(port, () => {

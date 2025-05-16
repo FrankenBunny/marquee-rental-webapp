@@ -1,6 +1,6 @@
 function populateUsersTable(users) {
   const tableBody = document.querySelector('#usersTable tbody');
-  tableBody.innerHTML = ''; // Clear any existing rows
+  tableBody.innerHTML = '';
 
   users.forEach(user => {
     const row = document.createElement('tr');
