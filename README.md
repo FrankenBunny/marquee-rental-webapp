@@ -34,6 +34,9 @@ PGADMIN_PASSWORD= (Password for Postgres Admin Login)
 4. Verify success with `docker ps`
 5. Access frontend at [http://www.localhost:3000](http://www.localhost:3000)
 
+> [!NOTE]
+> Run `docker-compose --profile tools` to containerize tools such as pgadmin used for database debugging.
+
 ### Workflow
 
 To allow for efficient development with focus on refactorization, each issue should be tackled with intent of creating modular solutions. For example:
@@ -71,11 +74,6 @@ The Authentication and Authorization features enables the use of role-based auth
 |Inventory Manager|IMS|Posseses all permissions given within the inventory management system. Including adding, editing, deleting inventory items, and modyfying the list of items.|
 |Inventory Worker|IMS|Posseses the minimal required permissions to perform daily inventory tasks, such as updating stock levels and recording transactions.|
 |Inventory Viewer|IMS| Posseses read-only permissions, allowing them to view inventory data without making any changes.|
-
-<!--- FOR REMEMBRANCE
-> [!NOTE]
-> Useful information that users should know, even when skimming content. 
--->
 
 #### AA Functionalities
 
