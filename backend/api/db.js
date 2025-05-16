@@ -1,6 +1,5 @@
 const path = require('path');
-console.log('Loading env from:', path.resolve(__dirname, '.backend.env'));
-require('dotenv').config({ path: path.resolve(__dirname, '.backend.env') });
+require('dotenv').config();
 
 const { Client } = require('pg');
 
