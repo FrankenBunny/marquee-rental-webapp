@@ -48,20 +48,5 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
 
-  pgadmin:
-    image: dpage/pgadmin4
-    container_name: pgadmin4_container
-    profiles: [tools]
-    restart: always
-    ports:
-      - ${PGADMIN_PORT}:${PGADMIN_PORT}
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
-    volumes:
-      - pgadmin-data:/var/lib/pgadmin
-
-
 volumes:
   db-data:
-  pgadmin-data:
