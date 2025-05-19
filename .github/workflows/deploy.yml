@@ -16,6 +16,21 @@ jobs:
       run:
         echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
 
+    - name: Clone repository
+      run: |
+        echo "Pulling latest code from main"
+        REPO_URL="https://github.com/FrankenBunny/marquee-rental-webapp"
+        BRANCH="13-separate-docker-compose-to-dev-and-deploy"
+        REPO_DIR="$HOME/marquee-rental-webapp"
+        #
+        if [ -d "$REPO_DIR/.git" ]; then
+          cd "$REPO_DIR"
+          git pull origin "$BRANCH"
+        else
+          git clone "$REPO_URL" "$REPO_DIR"
+          cd "$REPO_DIR"
+        fi
+
     - name: Create .env file
       env:
         HOST: ${{ secrets.EC2_HOST }}
