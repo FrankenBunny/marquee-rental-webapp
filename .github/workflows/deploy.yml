@@ -55,6 +55,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << 'EOF'
         cd "$HOME/marquee-rental-webapp"
+        echo "Connected to host, naviged to project folder"
         
         echo "Exporting variables"
         export FRONTEND_PORT="${FRONTEND_PORT}"
@@ -66,7 +67,7 @@ jobs:
         export POSTGRES_USER="${POSTGRES_USER}"
 
         echo "Building containers"
-        docker-compose -f docker-compose.yaml up -d --build
+        docker-compose -f compose.yaml up -d --build
 
         EOF
 
