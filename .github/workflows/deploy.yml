@@ -49,8 +49,8 @@ jobs:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       run: |
-        REPO_DIR="$HOME/marquee-rental-webapp"
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << EOF
+        REPO_DIR="$HOME/marquee-rental-webapp"
         cat <<EOT > "$REPO_DIR/.env"
         FRONTEND_PORT=${FRONTEND_PORT}
         API_PORT=${API_PORT}
