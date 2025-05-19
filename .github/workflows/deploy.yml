@@ -17,7 +17,12 @@ jobs:
         echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
 
     - name: Clone repository
+      env:
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ${{ secrets.EC2_USER }}
       run: |
+        echo "Connecting to server"
+        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << EOF
         echo "Pulling latest code from main"
         REPO_URL="https://github.com/FrankenBunny/marquee-rental-webapp"
         BRANCH="13-separate-docker-compose-to-dev-and-deploy"
@@ -30,6 +35,7 @@ jobs:
           git clone "$REPO_URL" "$REPO_DIR"
           cd "$REPO_DIR"
         fi
+        EOF
 
     - name: Create .env file
       env:
