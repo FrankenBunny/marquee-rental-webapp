@@ -68,7 +68,7 @@ jobs:
         PGADMIN_PORT="${PGADMIN_PORT}" \
         PGADMIN_EMAIL="${PGADMIN_EMAIL}" \
         PGADMIN_PASSWORD="${PGADMIN_PASSWORD}" \
-        docker-compose -f docker-compose.yaml up -d --build
+        docker-compose -f compose.yaml up -d --build
         EOF
 
 #    - name: Deploy to EC2
