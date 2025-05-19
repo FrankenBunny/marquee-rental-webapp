@@ -32,9 +32,11 @@ jobs:
 
         if [ -d "$REPO_DIR/.git" ]; then
           cd "$REPO_DIR"
-          git pull origin "$BRANCH"
+          git fetch origin
+          git checkout "$BRANCH"
+          git reset --hard origin/"$BRANCH"
         else
-          git clone "$REPO_URL" "$REPO_DIR"
+          git clone "$REPO_URL"
           cd "$REPO_DIR"
         fi
         '
@@ -52,7 +54,7 @@ jobs:
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       run: |
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << 'EOF'
-        cd "\$HOME/marquee-rental-webapp"
+        cd "$HOME/marquee-rental-webapp"
         
         echo "Exporting variables"
         export FRONTEND_PORT="${FRONTEND_PORT}"
