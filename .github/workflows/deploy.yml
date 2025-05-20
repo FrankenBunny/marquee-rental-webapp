@@ -72,8 +72,6 @@ jobs:
         docker-compose down
         docker-compose up -d --build
 
-        rm -f .env
-
         EOF
         rm -f .env
         rm -f github-ec2.pem
