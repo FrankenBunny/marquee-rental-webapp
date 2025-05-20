@@ -2,7 +2,7 @@ const express = require('express');
 require('dotenv').config();
 
 const app = express();
-const port = process.env.SERVER_PORT;
+const port = process.env.API_PORT;
 
 if (!port) {
   console.error('Error: SERVER_PORT environment variable is not set.');
