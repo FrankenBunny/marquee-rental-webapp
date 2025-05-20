@@ -53,19 +53,29 @@ jobs:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       run: |
+        echo "FRONTEND_PORT : ${{ secrets.FRONTEND_PORT }}" > .env
+        echo "API_PORT: ${{ secrets.API_PORT }}" > .env
+        echo "DB_PORT: ${{ secrets.DB_PORT }}" > .env
+        echo "POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}" > .env
+        echo "POSTGRES_DB: ${{ secrets.POSTGRES_DB }}" > .env
+        echo "POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}" > .env
+        echo "POSTGRES_USER: ${{ secrets.POSTGRES_USER }}" > .env
+        
+        scp .env -i github-ec2.pem ${USER}@${HOST}
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << EOF
+        
+        mv .env marquee-rental-webapp 
         cd marquee-rental-webapp
 
-        echo "Running docker-compose with inline environment variables"
-        FRONTEND_PORT="${FRONTEND_PORT}" \
-        API_PORT="${API_PORT}" \
-        DB_PORT="${DB_PORT}" \
-        POSTGRES_HOST="${POSTGRES_HOST}" \
-        POSTGRES_DB="${POSTGRES_DB}" \
-        POSTGRES_PASSWORD="${POSTGRES_PASSWORD}" \
-        POSTGRES_USER="${POSTGRES_USER}" \
-        docker-compose -f compose.yaml up -d --build
+        echo "Building containers"
+        docker-compose down
+        docker-compose up -d --build
+
+        rm -f .env
+
         EOF
+        rm -f .env
+        rm -f github-ec2.pem
 
 #    - name: Deploy to EC2
 #      env:
