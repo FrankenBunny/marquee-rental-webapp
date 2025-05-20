@@ -27,7 +27,7 @@ jobs:
         ls -la ~
 
         REPO_URL="https://github.com/FrankenBunny/marquee-rental-webapp"
-        BRANCH="main"
+        BRANCH="13-separate-docker-compose-to-dev-and-deploy"
         REPO_DIR="$HOME/marquee-rental-webapp"
 
         if [ -d "$REPO_DIR/.git" ]; then
@@ -75,7 +75,7 @@ jobs:
 
         echo "Building containers"
         docker-compose down
-        docker-compose up -d --build
+        docker-compose up -f compose.deploy.yaml -d --build
 
         EOF
 
