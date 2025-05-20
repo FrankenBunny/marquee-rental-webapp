@@ -53,6 +53,8 @@ jobs:
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       run: |
+        rm -f .env
+        touch .env
         echo "FRONTEND_PORT : ${{ secrets.FRONTEND_PORT }}" > .env
         echo "API_PORT: ${{ secrets.API_PORT }}" > .env
         echo "DB_PORT: ${{ secrets.DB_PORT }}" > .env
