@@ -62,10 +62,9 @@ jobs:
         echo "POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}" > .env
         echo "POSTGRES_USER: ${{ secrets.POSTGRES_USER }}" > .env
         
-        scp .env -i github-ec2.pem ${USER}@${HOST}
+        scp .env -i github-ec2.pem ${USER}@${HOST}:/home/${USER}/marquee-rental-weebapp/.env
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << EOF
         
-        mv .env marquee-rental-webapp 
         cd marquee-rental-webapp
 
         echo "Building containers"
