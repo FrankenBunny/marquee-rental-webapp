@@ -5,6 +5,10 @@ Web application for a marquee rental service company.  Developed for internal us
 ## Table of Contents
 
 1. [Project Description](#project-description)
+2. [For Developers](#for-developers)
+    1. [Setup development environment](#setup-development-environment)
+    2. [Workflow](#workflow)
+        1. [Issues](#issues)
 2. [Features](#features)
     1. [(AA) Authenication and Authorization](#authenication-and-authorization)
     2. [(IMS) Inventory Management System](#inventory-management-system)
@@ -22,15 +26,17 @@ This section covers neccessary information for further development of the projec
 1. Clone the repository
 2. Create .env file in root directory and set variables
 ```
+DB_PORT= (Port number for the database container) // Only development
+API_PORT= (Port number for the API container) // Only development
+FRONTEND_PORT= (Port number for frontend container)
 POSTGRES_HOST= (Name of the postgres container)
 POSTGRES_USER= (Username for default user in postgres database)
 POSTGRES_PASSWORD= (Password for default user in postgres database)
 POSTGRES_DB= (Name of the database)
-DB_PORT= (Port for the database container) // Only development
 PGADMIN_EMAIL= (Email for Postgres Admin Login)
 PGADMIN_PASSWORD= (Password for Postgres Admin Login)
 ```
-3. Run `docker-compose up --build` when in root directory
+3. Run `docker-compose -f compose.dev.yaml up --build -d` when in root directory
 4. Verify success with `docker ps`
 5. Access frontend at [http://www.localhost:3000](http://www.localhost:3000)
 
