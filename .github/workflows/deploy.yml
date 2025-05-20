@@ -78,8 +78,6 @@ jobs:
         docker-compose up -d --build
 
         EOF
-        rm -f .env
-        rm -f github-ec2.pem
 
 #    - name: Deploy to EC2
 #      env:
