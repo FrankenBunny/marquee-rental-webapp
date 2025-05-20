@@ -34,6 +34,6 @@ app.get('/{*any}', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Frontend server running at http://localhost:${PORT}`);
+app.listen(port, () => {
+  console.log(`Frontend server running at http://localhost:${port}`);
 });

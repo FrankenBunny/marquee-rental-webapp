@@ -74,8 +74,8 @@ jobs:
         cd marquee-rental-webapp
 
         echo "Building containers"
-        docker-compose down
-        docker-compose up -f compose.deploy.yaml -d --build
+        docker compose down
+        docker compose -f compose.deploy.yaml up -d --build
 
         EOF
 
