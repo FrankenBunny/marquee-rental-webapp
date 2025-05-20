@@ -54,13 +54,13 @@ jobs:
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
       run: |
         touch .env
-        echo "FRONTEND_PORT : ${{ secrets.FRONTEND_PORT }}" > .env
-        echo "API_PORT: ${{ secrets.API_PORT }}" > .env
-        echo "DB_PORT: ${{ secrets.DB_PORT }}" > .env
-        echo "POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}" > .env
-        echo "POSTGRES_DB: ${{ secrets.POSTGRES_DB }}" > .env
-        echo "POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}" > .env
-        echo "POSTGRES_USER: ${{ secrets.POSTGRES_USER }}" > .env
+        echo "FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}" > .env
+        echo "API_PORT=${{ secrets.API_PORT }}" > .env
+        echo "DB_PORT=${{ secrets.DB_PORT }}" > .env
+        echo "POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}" > .env
+        echo "POSTGRES_DB=${{ secrets.POSTGRES_DB }}" > .env
+        echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" > .env
+        echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" > .env
         
         scp -v -i github-ec2.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:./.env
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << EOF
