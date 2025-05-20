@@ -77,7 +77,13 @@ jobs:
         sudo docker compose down
         sudo docker compose -f compose.deploy.yaml up -d --build
 
+        rm -f .env
         EOF
+
+    - name: Remove temporary files
+      run: |
+        rm -f .env
+        rm -f github-ec2.pem
 
 #    - name: Deploy to EC2
 #      env:
