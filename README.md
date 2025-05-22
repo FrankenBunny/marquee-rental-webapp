@@ -43,6 +43,29 @@ PGADMIN_PASSWORD= (Password for Postgres Admin Login)
 > [!NOTE]
 > Run `docker-compose --profile tools` to containerize tools such as pgadmin used for database debugging.
 
+### 🚀 NPM Scripts for Docker
+
+Skip the long `docker-compose` commands with these handy npm scripts.  
+Just make sure you have your `.env` file in place.
+
+#### 🔧 Available Commands
+
+- **`npm run docker:all`** – Spins up all services (frontend, backend, db) with fresh builds.
+- **`npm run docker:frontend`** – Starts only the frontend (no backend/db).
+- **`npm run docker:backend`** – Starts only the backend (no db).
+
+#### 📦 Under the Hood
+
+```bash
+# docker:all
+docker-compose -f compose.dev.yaml up --build -d
+
+# docker:frontend
+docker-compose -f compose.dev.yaml up --no-deps -d frontend
+
+# docker:backend
+docker-compose -f compose.dev.yaml up --no-deps -d backend
+
 ### Workflow
 
 To allow for efficient development with focus on refactorization, each issue should be tackled with intent of creating modular solutions. For example:
