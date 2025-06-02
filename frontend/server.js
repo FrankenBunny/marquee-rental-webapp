@@ -14,14 +14,17 @@ app.use(express.static('pages'));
 app.use(express.static('css'));
 app.use(express.static('js'));
 
-app.get('/config.js', (req, res) => {
-  res.set('Content-Type', 'application/javascript');
-  res.send(`
-    window.env = {
-      API_URL: "${process.env.API_URL}",
-    };
-  `);
-});
+// Enable CORS for development environment
+if (process.env.NODE_ENV === 'development') {
+  app.get('/config.js', (req, res) => {
+    res.set('Content-Type', 'application/javascript');
+    res.send(`
+      window.env = {
+        API_URL: "${process.env.API_DEV_URL}",
+      };
+    `);
+  });
+}
 
 console.log(path.join(__dirname, 'pages/index.html'));
 

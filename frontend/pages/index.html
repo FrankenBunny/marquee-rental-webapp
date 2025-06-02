@@ -6,36 +6,73 @@
     <title>User list</title>
 </head>
 <body>
-    <script>
-        console.log("suck a dick")
-    </script>
-
-
     <script src="/config.js"></script>
-    <script src="./js/fetch-data.js"></script>
-    <script src="./js/component/populate-usertable.js"></script>
     <script>
-        fetchData('user').then(data => {
-        console.log('User data:', data);
-        if (data) {
-            populateUsersTable(data);
-            console.log("worked fine");
-        } else {
-            document.getElementById('loadingMessage').innerText = 'Failed to load users';
-        }
-        });
-    </script>
+        const API_URL = window.env.API_URL;
 
+        async function fetchData(endpoint = '') {
+        try {
+            console.log(`${API_URL}/api/${endpoint}`);
+            const response = await fetch(`${API_URL}/api/${endpoint}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log(`Response from /api/${endpoint}:`, data);
+            return data;
+        } catch (err) {
+            console.error(`Failed to fetch data from backend at /api/${endpoint}:`, err);
+        }
+        };
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const table = document.querySelector(".usersTable");
+            const table_head = table.querySelector("thead");
+            const table_body = table.querySelector("tbody");
+
+            const data = await fetchData('user');
+            console.log("Data from fetchData():", data);
+
+            const headers = Object.keys(data[0]);
+            const rows = data.map(obj => Object.values(obj));
+
+            table_head.innerHTML = "<tr></tr>"
+            table_body.innerHTML = "";
+            
+            for (const header_text of headers) {
+                const header_element = document.createElement("th");
+                header_element.textContent = header_text;
+                table_head.querySelector("tr").appendChild(header_element);
+            }
+
+            for (const row of rows) {
+                const row_element = document.createElement("tr");
+
+                for (const cell_text of row) {
+                    const cell_element = document.createElement("td");
+                    cell_element.textContent = cell_text;
+                    row_element.appendChild(cell_element);
+                }
+
+                table_body.appendChild(row_element);
+            }
+        })
+    </script>
     <h1>User List</h1>
     <p id="loadingMessage">Loading users...</p>
-    <table id="usersTable">
+    <table class="usersTable">
         <thead>
-        <tr>
-            <th>ID</th>
-            <th>Username</th>
-        </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>
+        </tbody>
     </table>
 </body>
 </html>

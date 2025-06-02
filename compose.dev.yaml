@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     env_file:
       - .env
+    environment:
+      NODE_ENV: development
     ports:
       - ${FRONTEND_PORT}:${FRONTEND_PORT} 
     depends_on:
@@ -17,7 +19,7 @@ services:
     env_file: 
       - .env
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
