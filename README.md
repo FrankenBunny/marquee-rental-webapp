@@ -7,6 +7,11 @@ Web application for a marquee rental service company.  Developed for internal us
 1. [Project Description](#project-description)
 2. [For Developers](#for-developers)
     1. [Setup development environment](#setup-development-environment)
+        1. [Setup development tools](#setup-development-tools)
+            1. [Hot Module Reload](#hot-module-reload)
+            2. [pgadmin](#pgadmin)
+        2. [🚀 NPM scripts for Docker](#-npm-scripts-for-docker)
+            1. [📦 Under the hood](#-under-the-hood)
     2. [Workflow](#workflow)
         1. [Issues](#issues)
 2. [Features](#features)
@@ -38,10 +43,56 @@ PGADMIN_PASSWORD= (Password for Postgres Admin Login)
 ```
 3. Run `docker-compose -f compose.dev.yaml up --build -d` when in root directory
 4. Verify success with `docker ps`
-5. Access frontend at [http://www.localhost:3000](http://www.localhost:3000)
+5. Access frontend at [http://www.localhost:[FRONTEND_PORT]](http://www.localhost:3000)
 
-> [!NOTE]
-> Run `docker-compose --profile tools` to containerize tools such as pgadmin used for database debugging.
+### Setup development tools
+Some tools are made available in the development environment. See the sections below on how to use them.
+
+#### Hot Module Reload
+
+1. Run `docker-compose -f compose.dev.yaml up --build -d` to rebuild and start all containers.
+2. Run `docker-compose -f compose.dev.yaml up frontend --build --watch` to allow hot module reload for the frontend.
+
+#### pgadmin
+
+1. Run `docker-compose --profile tools up` to containerize tools such as pgadmin used for database debugging.
+2. Access pgadmin at [localhost:8080](localhost:8080).
+3. Login using .env variable for `PGADMIN_EMAIL` and `PGADMIN_PASSWORD`.
+4. Connect to the database by **Adding a new Server**.
+5. Set the name to your choosing.
+6. Navigate to the **Connection** tab.
+7. Enter the host name address to match the service name, by default `db`.
+8. Enter the username, should match that of .env variable: `POSTGRES_USER`.
+9. Enter the password, should match that of .env variable: `POSTGRES_PASSWORD`.
+10. Press save.
+11. You can now access the database using pgadmin.
+
+> [!CAUTION] 
+> You need to use `docker-compose --profile tools down` to properly stop the pgadmin container.
+
+### 🚀 NPM Scripts for Docker
+
+Skip the long `docker-compose` commands with these handy npm scripts.  
+Just make sure you have your `.env` file in place.
+
+#### 🔧 Available Commands
+
+- **`npm run docker:all`** – Spins up all services (frontend, backend, db) with fresh builds.
+- **`npm run docker:frontend`** – Starts only the frontend (no backend/db).
+- **`npm run docker:backend`** – Starts only the backend (no db).
+
+#### 📦 Under the Hood
+
+```bash
+# docker:all
+docker-compose -f compose.dev.yaml up --build -d
+
+# docker:frontend
+docker-compose -f compose.dev.yaml up --no-deps -d frontend
+
+# docker:backend
+docker-compose -f compose.dev.yaml up --no-deps -d backend
+```
 
 ### Workflow
 

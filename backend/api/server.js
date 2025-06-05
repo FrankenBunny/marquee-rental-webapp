@@ -12,14 +12,27 @@ if (!port) {
 
 // Enable CORS for development environment
 if (process.env.NODE_ENV === 'development') {
-  const frontend_port = process.env.FRONTEND_PORT;
-
+  const frontendPort = process.env.FRONTEND_PORT;
+  
   app.use(cors({
-    origin: `http://localhost:${frontend_port}`,
-    credentials: true
+    origin: `http://localhost:${frontendPort}`,
+    credentials: true,
+    optionsSuccessStatus: 200
   }));
 
-  console.log(`CORS enabled for development at http://localhost:${frontend_port}`);
+  console.log(`CORS enabled for development at http://localhost:${frontendPort}`);
+
+} else if (process.env.NODE_ENV === 'production') {
+  const frontendPort = process.env.FRONTEND_PORT;
+  const frontendOrigin = process.env.FRONTEND_ORIGIN; 
+
+  app.use(cors({
+    origin: [`http://${frontendOrigin}:${frontendPort}`, `https://${frontendOrigin}:${frontendPort}`],
+    credentials: true,
+    optionsSuccessStatus: 200
+  }));
+
+  console.log(`CORS enabled for production: http://${frontendOrigin}:${frontendPort}`);
 }
 
 // Routes

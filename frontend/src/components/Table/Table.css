@@ -1,0 +1,36 @@
+.reusable-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.reusable-table th,
+.reusable-table td {
+    padding: 8px 12px;
+    text-align: left;
+}
+
+.reusable-table th:hover{
+    cursor: default;
+}
+
+.reusable-table thead {
+    background-color: var(--color-mblue-500);
+    color: white;
+}
+
+.reusable-table tbody {
+    background-color: var(--color-mblue-200);
+}
+
+.reusable-table tbody tr:nth-child(even) {
+    background-color: var(--color-mblue-100);
+}
+
+.reusable-table tbody tr:hover {
+    background-color: var(--color-mblue-500);
+    cursor: pointer;
+}
