@@ -68,6 +68,32 @@ jobs:
         
         scp -v -i github-ec2.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/.env
 
+    - name: Clenup compose
+      env:
+        HOST: ${{ secrets.EC2_HOST }}
+        USER: ${{ secrets.EC2_USER }}
+      run: |
+        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << 'EOF'
+      
+        cd marquee-rental-webapp || exit 1
+
+        echo "🧹 Cleaning up all previous Docker containers, images, volumes, and cache"
+        sudo docker rm -f $(sudo docker ps -aq) || true
+        sudo docker rmi -f $(sudo docker images -q) || true
+        sudo docker volume rm $(sudo docker volume ls -q) || true
+        sudo docker builder prune -af || true
+        sudo docker network prune -f || true
+
+        echo "📦 Building fresh containers"
+        sudo docker compose down --volumes --remove-orphans
+        sudo docker compose -f compose.deploy.yaml up -d --build
+
+        echo "🧼 Removing .env (if any)"
+        rm -f .env
+
+        echo "✅ Deployment complete"
+        EOF
+    
     - name: Build containers
       env:
         HOST: ${{ secrets.EC2_HOST }}
