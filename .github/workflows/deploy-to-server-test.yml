@@ -43,7 +43,7 @@ jobs:
           git clone --branch "$BRANCH" --single-branch "$REPO_URL" "$REPO_DIR"
           cd "$REPO_DIR"
         fi
-      '
+        '
 
     - name: Create .env file
       env:
