@@ -33,13 +33,17 @@ jobs:
         if [ -d "$REPO_DIR/.git" ]; then
           cd "$REPO_DIR"
           git fetch origin
-          git checkout "$BRANCH"
+          if git show-ref --verify --quiet refs/heads/"$BRANCH"; then
+            git checkout "$BRANCH"
+          else
+            git checkout -b "$BRANCH" origin/"$BRANCH"
+          fi
           git reset --hard origin/"$BRANCH"
         else
-          git clone "$REPO_URL"
+          git clone --branch "$BRANCH" --single-branch "$REPO_URL" "$REPO_DIR"
           cd "$REPO_DIR"
         fi
-        '
+      '
 
     - name: Create .env file
       env:
