@@ -85,16 +85,6 @@ jobs:
         sudo docker volume rm $(sudo docker volume ls -q) || true
         sudo docker builder prune -af || true
         sudo docker network prune -f || true
-
-        echo "📦 Building fresh containers"
-        sudo docker compose down --volumes --remove-orphans
-        sudo docker compose -f compose.deploy.yaml up -d --build
-
-        echo "🧼 Removing .env (if any)"
-        rm -f .env
-
-        echo "✅ Deployment complete"
-        EOF
     
     - name: Build containers
       env:
@@ -105,11 +95,14 @@ jobs:
         
         cd marquee-rental-webapp
 
-        echo "Building containers"
-        sudo docker compose down
+        echo "📦 Building fresh containers"
+        sudo docker compose down --volumes --remove-orphans
         sudo docker compose -f compose.deploy.yaml up -d --build
 
+        echo "🧼 Removing .env (if any)"
         rm -f .env
+
+        echo "✅ Deployment complete"
         EOF
 
     - name: Remove temporary files
