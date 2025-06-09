@@ -52,26 +52,30 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_USER=${POSTGRES_USER}
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
     ports:
       - ${DB_PORT}:${DB_PORT}
-
+  
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4_container
+    env_file:
+      - .env
     profiles: [tools]
     restart: always
     ports:
-      - ${PGADMIN_PORT}:${PGADMIN_PORT}
+      - ${PGADMIN_PORT}:80
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     volumes:
       - pgadmin-data:/var/lib/pgadmin
-
+    depends_on:
+      db:
+        condition: service_healthy 
 
 volumes:
   db-data:

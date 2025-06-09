@@ -38,6 +38,7 @@ if (process.env.NODE_ENV === 'development') {
 // Routes
 const userRoutes = require('./routes/marquee_user')
 
+// Allow JSON parsing (...and other middlewares)
 app.use(express.json());
 
 app.use('/api', userRoutes);

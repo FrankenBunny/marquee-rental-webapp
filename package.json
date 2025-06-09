@@ -1,0 +1,12 @@
+{
+    "name": "marquee-npm-scripts",
+    "version": "1.0.0",
+    "scripts": {
+        "docker:all": "docker-compose -f compose.dev.yaml up --build -d",
+        "docker:frontend": "docker-compose -f compose.dev.yaml up --no-deps -d frontend",
+        "docker:backend": "docker-compose -f compose.dev.yaml up --no deps -d backend"
+    },
+    "dependencies": {
+        "cors": "^2.8.5"
+    }
+}
