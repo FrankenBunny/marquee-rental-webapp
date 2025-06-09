@@ -96,7 +96,7 @@ jobs:
         cd marquee-rental-webapp
 
         echo "📦 Building fresh containers"
-        sudo docker compose down --volumes --remove-orphans
+        sudo docker compose -f compose.deploy.yaml down --volumes --remove-orphans
         sudo docker compose -f compose.deploy.yaml up -d --build
 
         echo "🧼 Removing .env (if any)"
