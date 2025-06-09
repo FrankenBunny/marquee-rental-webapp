@@ -20,10 +20,6 @@ async function fetchData(endpoint = '') {
             throw new Error(`HTTP error ${response.status}`);
         }
 
-        // TODO: Remove once problems are fixed.
-        const rawText = await response.text();
-        console.log(`Raw response from /api/${endpoint}:`, rawText);
-
         const data = await response.json();
         return data;
     } catch (err) {
