@@ -20,6 +20,9 @@ async function fetchData(endpoint = '') {
             throw new Error(`HTTP error ${response.status}`);
         }
 
+        const rawText = await response.text();
+        console.log(`Raw response from /api/${endpoint}:`, rawText);
+
         const data = await response.json();
         return data;
     } catch (err) {
