@@ -60,7 +60,7 @@ jobs:
       run: |
         touch .env
         echo "FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}" > .env
-        echo "FRONTEND_ORIGIN=${{ secrets.FRONTEND_ORIGIN }}" > .env
+        echo "FRONTEND_ORIGIN=${{ secrets.FRONTEND_ORIGIN }}" >> .env
         echo "API_PORT=${{ secrets.API_PORT }}" >> .env
         echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
         echo "VITE_API_URL"=${{ secrets.VITE_API_URL }} >>.env
