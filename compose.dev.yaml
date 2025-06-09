@@ -2,13 +2,24 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
+    environment:
+      NODE_ENV: development
     ports:
       - ${FRONTEND_PORT}:${FRONTEND_PORT} 
     depends_on:
       - backend
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
 
   backend:
     build:
@@ -17,7 +28,7 @@ services:
     env_file: 
       - .env
     environment:
-      NODE_ENV: production
+      NODE_ENV: development
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}

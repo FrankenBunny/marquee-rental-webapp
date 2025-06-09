@@ -1,0 +1,60 @@
+.reusable-button {
+    border-radius: .5rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+}
+
+.primary-button {
+    background-color: var(--color-mblue-500);
+    color: var(--color-mneutral-100);
+}
+.primary-button:hover {
+    background-color: var(--color-mblue-300);
+}
+.primary-button:active {
+    background-color: var(--color-mblue-500);
+}
+
+.primary-button-with-outline {
+    background-color: transparent;
+    color: var(--color-mblue-500);
+    border: 2px solid var(--color-mblue-500);
+}
+.primary-button-with-outline:hover {
+    color: var(--color-mblue-300);
+    border: 2px solid var(--color-mblue-300);
+}
+.primary-button-with-outline:active {
+    color: var(--color-mblue-500);
+    border: 2px solid var(--color-mblue-500);
+}
+
+.warning-button {
+    background-color: var(--color-mred-500);
+    color: var(--color-mneutral-100);
+}
+.warning-button:hover {
+    background-color: var(--color-mred-300);
+    color: var(--color-mneutral-100);
+}
+.warning-button:active {
+    background-color: var(--color-mred-500);
+}
+
+.warning-button-with-outline {
+    background-color: transparent;
+    color: var(--color-mred-500);
+    border: 2px solid var(--color-mred-500);
+}
+.warning-button-with-outline:hover {
+    color: var(--color-mred-300);
+    border: 2px solid var(--color-mred-300);
+}
+.warning-button-with-outline:active {
+    color: var(--color-mred-500);
+    border: 2px solid var(--color-mred-500);
+}

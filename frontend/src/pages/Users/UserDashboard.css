@@ -1,0 +1,8 @@
+.user-dashboard {
+    background-color: var(--color-mneutral-100);
+    padding: 10%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 10%;
+    gap: 1.5rem;
+}

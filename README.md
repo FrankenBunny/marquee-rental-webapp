@@ -8,7 +8,8 @@ Web application for a marquee rental service company.  Developed for internal us
 2. [For Developers](#for-developers)
     1. [Setup development environment](#setup-development-environment)
         1. [Setup development tools](#setup-development-tools)
-            1. [pgadmin](#pgadmin)
+            1. [Hot Module Reload](#hot-module-reload)
+            2. [pgadmin](#pgadmin)
         2. [🚀 NPM scripts for Docker](#-npm-scripts-for-docker)
             1. [📦 Under the hood](#-under-the-hood)
     2. [Workflow](#workflow)
@@ -42,10 +43,15 @@ PGADMIN_PASSWORD= (Password for Postgres Admin Login)
 ```
 3. Run `docker-compose -f compose.dev.yaml up --build -d` when in root directory
 4. Verify success with `docker ps`
-5. Access frontend at [http://www.localhost:3000](http://www.localhost:3000)
+5. Access frontend at [http://www.localhost:[FRONTEND_PORT]](http://www.localhost:3000)
 
 ### Setup development tools
 Some tools are made available in the development environment. See the sections below on how to use them.
+
+#### Hot Module Reload
+
+1. Run `docker-compose -f compose.dev.yaml up --build -d` to rebuild and start all containers.
+2. Run `docker-compose -f compose.dev.yaml up frontend --build --watch` to allow hot module reload for the frontend.
 
 #### pgadmin
 
