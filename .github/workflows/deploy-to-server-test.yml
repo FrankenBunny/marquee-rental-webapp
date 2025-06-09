@@ -50,6 +50,7 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
         FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
+        FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
         API_PORT: ${{ secrets.API_PORT }}
         DB_PORT: ${{ secrets.DB_PORT }}
         POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
@@ -59,6 +60,7 @@ jobs:
       run: |
         touch .env
         echo "FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}" > .env
+        echo "FRONTEND_ORIGIN=${{ secrets.FRONTEND_ORIGIN }}" > .env
         echo "API_PORT=${{ secrets.API_PORT }}" >> .env
         echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
         echo "VITE_API_URL"=${{ secrets.VITE_API_URL }} >>.env
