@@ -157,7 +157,7 @@ The inventory management system helps workers to efficiently track and update in
 |Table|Purpose|Real-world example|
 |---|---|---|
 |Rentable|Items that are available for rental.|A 5x5 tent.|
-|Part|Distinct parts that make up a rentable.|Roof, wall, steel beam.|
+|Part|Interchangeble parts for specific rentables.|Window roof, standard roof, window wall, standard wall.|
 |Item|Common parts used in multiple a rentable.|Nails, bolts.|
 |RentableCategory|A category of rentables.|Tents, decor.|
 |RentableTag|A tag for rentables.|New, dirty, faulty.|
