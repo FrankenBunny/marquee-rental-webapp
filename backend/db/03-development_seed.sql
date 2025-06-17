@@ -52,3 +52,8 @@ UNION ALL
 SELECT
   (SELECT id FROM part WHERE name = 'Custom Roof for Event Tent'),
   (SELECT id FROM extension WHERE name = '+5m');
+
+INSERT INTO item (name)
+VALUES
+  ('10kg Cement Blocks'),
+  ('Ground bolts');

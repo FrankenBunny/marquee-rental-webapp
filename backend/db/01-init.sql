@@ -33,14 +33,6 @@ CREATE TABLE availability (
     broken INTEGER DEFAULT 0 NOT NULL
 );
 
-CREATE TABLE item (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(32) NOT NULL UNIQUE,
-    description VARCHAR(255),
-    availability_id UUID NOT NULL,
-    FOREIGN KEY (availability_id) REFERENCES availability(id) ON DELETE CASCADE
-);
-
 /* 
  *  Has trigger which updates has_extension, has_part if 
  *  extensions or parts are added referencing a tuple in
@@ -97,29 +89,13 @@ CREATE TABLE extension_part_from_rentable_part (
     FOREIGN KEY (extension_id) REFERENCES extension(id) ON DELETE CASCADE
 );
 
-/* NEEDS REWORK
-CREATE TABLE extension_part (
+CREATE TABLE item (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(32) NOT NULL UNIQUE,
     description VARCHAR(255),
-    interchangeable BOOLEAN DEFAULT FALSE NOT NULL,
-    quantity INTEGER NOT NULL,
-    extension_id UUID NOT NULL,
     availability_id UUID,
-    FOREIGN KEY (extension_id) REFERENCES extension(id) ON DELETE CASCADE,
-    FOREIGN KEY (availability_id) REFERENCES availability(id) ON DELETE SET NULL
-);
-
-CREATE TABLE extension_variant (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(32) NOT NULL UNIQUE,
-    description VARCHAR(255),
-    extension_part_id UUID NOT NULL,
-    availability_id UUID NOT NULL,
-    FOREIGN KEY (extension_part_id) REFERENCES extension_part(id) ON DELETE CASCADE,
     FOREIGN KEY (availability_id) REFERENCES availability(id) ON DELETE CASCADE
 );
-*/
 
 -- Create availability tuple on INSERT
 CREATE OR REPLACE FUNCTION assign_availability()
@@ -216,41 +192,3 @@ CREATE TRIGGER on_part_insert_update_rentable
 AFTER INSERT ON extension_part_from_rentable_part
 FOR EACH ROW
 EXECUTE FUNCTION update_extension_has_parts();
-
-/* NEEDS REWORK 
-
--- If extensions are added to rentable
-CREATE OR REPLACE FUNCTION update_rentable_has_extensions()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE rentable
-    SET has_extensions = TRUE
-    WHERE id = NEW.rentable_id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE TRIGGER on_extenstion_insert_update_rentable
-AFTER INSERT ON extension
-FOR EACH ROW
-EXECUTE FUNCTION update_rentable_has_extensions();
-
--- If part variants are added to extension_variant
-CREATE OR REPLACE FUNCTION update_extension_part_interchangeable()
-RETURNS TRIGGER AS $$
-BEGIN
-    UPDATE extension_part
-    SET interchangeable = TRUE
-    WHERE id = NEW.extension_part_id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE TRIGGER on_extenstion_variant_insert_update_part
-AFTER INSERT ON extension_variant
-FOR EACH ROW
-EXECUTE FUNCTION update_extension_part_interchangeable();
-
-*/
