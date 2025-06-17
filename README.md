@@ -153,14 +153,15 @@ The inventory management system helps workers to efficiently track and update in
 
 #### Inventory Database Diagram
 
-![Inventory database diagram](documentation/inventory-diagram.png)
+![Inventory database diagram](documentation/db-diagram-inventory.png)
 |Table|Purpose|Real-world example|
 |---|---|---|
 |Rentable|Items that are available for rental.|A 5x5 tent.|
-|Part|Distinct parts that make up a rentable.|Roof, wall, steel beam.|
-|Item|Common parts used in multiple a rentable.|Nails, bolts.|
-|RentableCategory|A category of rentables.|Tents, decor.|
-|RentableTag|A tag for rentables.|New, dirty, faulty.|
+|Part|Components for specific rentables.|Window roof, standard roof, window wall, standard wall.|
+|Part Variant|Variants for parts, such as white wall/window wall.|
+|Extension|Extra 5 meters.|
+|Extension From Parts|Use rentable part for extensions.|
+|Item|Components used in multiple a rentables.|Nails, bolts.|
 
 #### Inventory Functionalities
 

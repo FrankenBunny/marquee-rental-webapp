@@ -29,13 +29,13 @@ services:
         condition: service_healthy 
 
   db:
-    image: postgres
+    image: postgres:17
     restart: always
     env_file: 
       - .env
     volumes:
-      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./backend/db/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+      - ./backend/db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./backend/db/02-default_seed.sql:/docker-entrypoint-initdb.d/02-default_seed.sql
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
