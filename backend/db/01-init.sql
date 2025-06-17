@@ -93,7 +93,7 @@ CREATE TABLE item (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(32) NOT NULL UNIQUE,
     description VARCHAR(255),
-    availability_id UUID,
+    availability_id UUID NOT NULL,
     FOREIGN KEY (availability_id) REFERENCES availability(id) ON DELETE CASCADE
 );
 
@@ -128,6 +128,11 @@ EXECUTE FUNCTION assign_availability();
 
 CREATE TRIGGER insert_extension_availability
 BEFORE INSERT ON extension
+FOR EACH ROW
+EXECUTE FUNCTION assign_availability();
+
+CREATE TRIGGER insert_item_availability
+BEFORE INSERT ON item
 FOR EACH ROW
 EXECUTE FUNCTION assign_availability();
 
