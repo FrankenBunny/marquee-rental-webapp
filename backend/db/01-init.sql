@@ -137,6 +137,49 @@ FOR EACH ROW
 EXECUTE FUNCTION assign_availability();
 
 
+-- Remove availability
+CREATE OR REPLACE FUNCTION on_delete_remove_availability()
+RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM availability
+    WHERE id = OLD.availability_id;
+
+    RETURN OLD;
+END
+$$ LANGUAGE plpsql;
+
+CREATE TRIGGER delete_rentable_availability
+AFTER DELETE ON rentable
+FOR EACH ROW
+WHEN (OLD.availability_id IS NOT NULL)
+EXECUTE FUNCTION on_delete_remove_availability();
+
+CREATE TRIGGER delete_part_availability
+AFTER DELETE ON part
+FOR EACH ROW
+WHEN (OLD.availability_id IS NOT NULL)
+EXECUTE FUNCTION on_delete_remove_availability();
+
+CREATE TRIGGER delete_part_variant_availability
+AFTER DELETE ON part_variant
+FOR EACH ROW
+WHEN (OLD.availability_id IS NOT NULL)
+EXECUTE FUNCTION on_delete_remove_availability();
+
+CREATE TRIGGER delete_extension_availability
+AFTER DELETE ON extension
+FOR EACH ROW
+WHEN (OLD.availability_id IS NOT NULL)
+EXECUTE FUNCTION on_delete_remove_availability();
+
+CREATE TRIGGER delete_item_availability
+AFTER DELETE ON item
+FOR EACH ROW
+WHEN (OLD.availability_id IS NOT NULL)
+EXECUTE FUNCTION on_delete_remove_availability();
+
+
+
 -- If part INSERT update rentable
 CREATE OR REPLACE FUNCTION update_rentable_has_parts()
 RETURNS TRIGGER AS $$
