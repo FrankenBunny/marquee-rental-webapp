@@ -146,7 +146,7 @@ BEGIN
 
     RETURN OLD;
 END
-$$ LANGUAGE plpsql;
+$$ LANGUAGE plpgsql;
 
 CREATE TRIGGER delete_rentable_availability
 AFTER DELETE ON rentable

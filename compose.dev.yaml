@@ -43,7 +43,7 @@ services:
     image: postgres:17
     restart: always
     volumes:
-      - db-data-test:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
       - ./backend/db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
       - ./backend/db/02-default_seed.sql:/docker-entrypoint-initdb.d/02-default_seed.sql
       - ./backend/db/03-development_seed.sql:/docker-entrypoint-initdb.d/03-development_seed.sql

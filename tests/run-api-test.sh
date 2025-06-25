@@ -14,7 +14,7 @@ cleanup() {
     docker compose -f compose.test.yaml down test-db -v
 }
 
-# Register trap in the main shell
+# Register trap in the main shell (Executes always when script exits)
 trap cleanup EXIT
 
 start_db() {
@@ -56,6 +56,23 @@ run_unit() {
     exit $test_exit_code
 }
 
+run_lint() {
+    cd "$API_PROJECT" || exit 1
+    export $(grep -v '^#' "$ENV_FILE" | xargs)
+    npm run lint
+    local test_exit_code=$?
+    exit $test_exit_code
+}
+
+run_coverage() {
+    start_db
+    cd "$API_PROJECT" || exit 1
+    export $(grep -v '^#' "$ENV_FILE" | xargs)
+    npm run test:coverage
+    local test_exit_code=$?
+    exit $test_exit_code
+}
+
 case $1 in
     full)
         run_full
@@ -65,6 +82,12 @@ case $1 in
         ;;
     unit)
         run_unit
+        ;;
+    lint)
+        run_lint
+        ;;
+    coverage)
+        run_coverage
         ;;
     *)
         echo "Usage: $0 [full, integration, unit]"
