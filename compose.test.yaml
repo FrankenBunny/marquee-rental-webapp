@@ -1,0 +1,82 @@
+services:
+  test-backend:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile.test
+    env_file: 
+      - .env
+    profiles: [ full ]
+    environment:
+      NODE_ENV: test
+      POSTGRES_HOST: test-db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      PGUSER: ${POSTGRES_USER}
+    ports:
+      - ${API_PORT}:${API_PORT}
+    depends_on:
+      test-db:
+        condition: service_healthy 
+    command: npm run test
+  
+  test-backend-integration:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile.test
+    env_file: 
+      - .env
+    profiles: [ integration ]
+    environment:
+      NODE_ENV: test
+      POSTGRES_HOST: test-db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      PGUSER: ${POSTGRES_USER}
+    ports:
+      - ${API_PORT}:${API_PORT}
+    depends_on:
+      test-db:
+        condition: service_healthy 
+    command: npm run test:integration
+  
+  test-backend-unit:
+    build:
+      context: ./backend/api
+      dockerfile: Dockerfile.test
+    env_file: 
+      - .env
+    profiles: [ unit ]
+    environment:
+      NODE_ENV: test
+      POSTGRES_HOST: test-db
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      PGUSER: ${POSTGRES_USER}
+    ports:
+      - ${API_PORT}:${API_PORT}
+    command: npm run test:unit
+
+  test-db:
+    image: postgres:17
+    restart: always
+    profiles: [ full, integration ]
+    volumes:
+      - db-data-test:/var/lib/postgresql/data
+      - ./backend/db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+
+volumes:
+  db-data-test:
