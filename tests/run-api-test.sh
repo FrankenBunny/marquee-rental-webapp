@@ -3,7 +3,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
-API_PROJECT="$PROJECT_ROOT/backend/api"
+API_PROJECT="$PROJECT_ROOT/api"
 ENV_FILE="$PROJECT_ROOT/.test.env"
 
 source "$ENV_FILE"
@@ -64,15 +64,6 @@ run_lint() {
     exit $test_exit_code
 }
 
-run_coverage() {
-    start_db
-    cd "$API_PROJECT" || exit 1
-    export $(grep -v '^#' "$ENV_FILE" | xargs)
-    npm run test:coverage
-    local test_exit_code=$?
-    exit $test_exit_code
-}
-
 case $1 in
     full)
         run_full
@@ -85,9 +76,6 @@ case $1 in
         ;;
     lint)
         run_lint
-        ;;
-    coverage)
-        run_coverage
         ;;
     *)
         echo "Usage: $0 [full, integration, unit]"

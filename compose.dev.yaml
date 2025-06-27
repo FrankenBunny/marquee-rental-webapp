@@ -10,7 +10,7 @@ services:
     ports:
       - ${FRONTEND_PORT}:${FRONTEND_PORT} 
     depends_on:
-      - backend
+      - api
     develop:
       watch:
         - action: sync
@@ -21,10 +21,10 @@ services:
         - action: rebuild
           path: package.json
 
-  backend:
+  api:
     build:
-      context: ./backend/api
-      dockerfile: Dockerfile
+      context: ./api
+      dockerfile: Dockerfile.dev
     env_file: 
       - .env
     environment:
@@ -37,16 +37,26 @@ services:
       - ${API_PORT}:${API_PORT}
     depends_on:
       db:
-        condition: service_healthy 
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./api
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
+    
 
   db:
     image: postgres:17
     restart: always
     volumes:
       - db-data:/var/lib/postgresql/data
-      - ./backend/db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
-      - ./backend/db/02-default_seed.sql:/docker-entrypoint-initdb.d/02-default_seed.sql
-      - ./backend/db/03-development_seed.sql:/docker-entrypoint-initdb.d/03-development_seed.sql
+      - ./db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./db/02-default_seed.sql:/docker-entrypoint-initdb.d/02-default_seed.sql
+      - ./db/03-development_seed.sql:/docker-entrypoint-initdb.d/03-development_seed.sql
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

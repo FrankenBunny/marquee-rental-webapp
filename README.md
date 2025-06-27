@@ -14,6 +14,7 @@ Web application for a marquee rental service company.  Developed for internal us
             1. [📦 Under the hood](#-under-the-hood)
     2. [Workflow](#workflow)
         1. [Issues](#issues)
+    3. [TDD and running tests](#tdd-and-running-tests)
 2. [Features](#features)
     1. [(AA) Authenication and Authorization](#authenication-and-authorization)
     2. [(IMS) Inventory Management System](#inventory-management-system)
@@ -34,6 +35,7 @@ This section covers neccessary information for further development of the projec
 DB_PORT= (Port number for the database container) // Only development
 API_PORT= (Port number for the API container) // Only development
 FRONTEND_PORT= (Port number for frontend container)
+FRONTEND_ORIGIN= (Origin for frontend when calling API)
 POSTGRES_HOST= (Name of the postgres container)
 POSTGRES_USER= (Username for default user in postgres database)
 POSTGRES_PASSWORD= (Password for default user in postgres database)
@@ -41,7 +43,7 @@ POSTGRES_DB= (Name of the database)
 PGADMIN_EMAIL= (Email for Postgres Admin Login)
 PGADMIN_PASSWORD= (Password for Postgres Admin Login)
 ```
-3. Run `docker-compose -f compose.dev.yaml up --build -d` when in root directory
+3. Run `docker compose -f compose.dev.yaml up --build -d` when in root directory
 4. Verify success with `docker ps`
 5. Access frontend at [http://www.localhost:[FRONTEND_PORT]](http://www.localhost:3000)
 
@@ -50,13 +52,13 @@ Some tools are made available in the development environment. See the sections b
 
 #### Hot Module Reload
 
-1. Run `docker-compose -f compose.dev.yaml up --build -d` to rebuild and start all containers.
-2. Run `docker-compose -f compose.dev.yaml up frontend --build --watch` to allow hot module reload for the frontend.
+1. Run `docker compose -f compose.dev.yaml up --build -d` to rebuild and start all containers.
+2. Run `docker compose -f compose.dev.yaml up frontend --build --watch` to allow hot module reload for the frontend.
 
 #### pgadmin
 
-1. Run `docker-compose --profile tools up` to containerize tools such as pgadmin used for database debugging.
-2. Access pgadmin at [localhost:8080](localhost:8080).
+1. Run `docker compose --profile tools up` to containerize tools such as pgadmin used for database debugging.
+2. Access pgadmin at [localhost:[PGADMIN_PORT]](localhost:8080).
 3. Login using .env variable for `PGADMIN_EMAIL` and `PGADMIN_PASSWORD`.
 4. Connect to the database by **Adding a new Server**.
 5. Set the name to your choosing.
@@ -68,11 +70,11 @@ Some tools are made available in the development environment. See the sections b
 11. You can now access the database using pgadmin.
 
 > [!CAUTION] 
-> You need to use `docker-compose --profile tools down` to properly stop the pgadmin container.
+> You need to use `docker compose --profile tools down` to properly stop the pgadmin container.
 
 ### 🚀 NPM Scripts for Docker
 
-Skip the long `docker-compose` commands with these handy npm scripts.  
+Skip the long `docker compose` commands with these handy npm scripts.  
 Just make sure you have your `.env` file in place.
 
 #### 🔧 Available Commands
@@ -85,13 +87,13 @@ Just make sure you have your `.env` file in place.
 
 ```bash
 # docker:all
-docker-compose -f compose.dev.yaml up --build -d
+docker compose -f compose.dev.yaml up --build -d
 
 # docker:frontend
-docker-compose -f compose.dev.yaml up --no-deps -d frontend
+docker compose -f compose.dev.yaml up --no-deps -d frontend
 
 # docker:backend
-docker-compose -f compose.dev.yaml up --no-deps -d backend
+docker compose -f compose.dev.yaml up --no-deps -d backend
 ```
 
 ### Workflow
@@ -101,6 +103,24 @@ To allow for efficient development with focus on refactorization, each issue sho
 Issue: Display users on dedicated page on the frontend
 Solution: Create re-usable script for fetching, then use script to fetch data and display on page.
 Why: Changes to the API endpoint (for example due to introducing authorization), does not require multiple scripts to be altered. Instead only the script dedicatetd for fetching requires updating.
+
+
+### TDD and running tests
+Currently the backend is being implemented using TDD. The tests have been separated into two categories, unit and integration. The integration tests require containers to be live, while unit tests can be executed using mocking behaviour. Unit tests at the current state mostly verifies the error handling, implemented with the purpose of limiting the number of errornous calls to the database.
+
+The tests can be automatically executed by running the [script](/tests/run-api-test.sh). Selecting on of the availables modes:
+
+`./run-api-test.sh [mode]`
+1. **full**: Executes both integration and unit tests.
+2. **integration**
+3. **unit**
+4. **lint**: Lints the project using eslint.
+
+>[!NOTE]
+> The script returns 0 if all tests succeed and 1 if not. These results may be used in CICD pipeline to prevent code with failed tests from being pushed to production.
+
+>[!NOTE]
+> The script returns 0 if all lint succeed and 1 if not. These results may be used in CICD pipeline to prevent code that did not pass the lint to be pushed to production.
 
 #### Issues
 

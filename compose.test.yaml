@@ -65,7 +65,7 @@ services:
     profiles: [ full, integration ]
     volumes:
       - db-data-test:/var/lib/postgresql/data
-      - ./backend/db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
