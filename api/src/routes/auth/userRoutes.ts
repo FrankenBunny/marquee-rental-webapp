@@ -108,20 +108,22 @@ router.patch(
   "/user/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const { given_name, given_password, given_username, given_email } =
-      req.body;
+    const { name, password, username, email } = req.body;
 
     if (!id) {
       const err: AppError = new Error("Missing user ID");
       err.status = 400;
-      return next(err);
+      next(err);
+      console.error("no user id provided");
+      res.status(400).json({ error: "No user ID provided" });
+      return;
     }
 
     const updates = {
-      username: given_username,
-      name: given_name,
-      password_hash: given_password,
-      email: given_email,
+      username: username,
+      name: name,
+      password_hash: password,
+      email: email,
     };
 
     const patchQuery = await buildPatchQuery(id, updates, {
@@ -143,6 +145,7 @@ router.patch(
         res
           .status(400)
           .json({ error: "No valid field provided for api/user PATCH" });
+        console.error("no valid field for PATCH provided");
         return;
       }
 

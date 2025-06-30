@@ -141,7 +141,7 @@ describe("userRoutes /PUT/:id", () => {
   });
 });
 
-describe.todo("userRoutes /PATCH/:id", () => {
+describe("userRoutes /PATCH/:id", () => {
   let testId: string;
   test("should update name and return 200", async () => {
     const given_username: string = "testUserName";
