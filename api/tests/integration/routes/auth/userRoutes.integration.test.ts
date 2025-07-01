@@ -39,11 +39,9 @@ describe("userRoutes /POST", () => {
     expect(response.statusCode).toBe(201);
     expect(response.body).toHaveProperty("id");
     expect(response.body).toHaveProperty("created_at");
-    expect(response.body).toMatchObject({
-      username: given_username.toLowerCase(),
-      name: given_name,
-      email: given_email.toLowerCase(),
-    });
+    expect(response.body.username).toEqual(given_username.toLowerCase());
+    expect(response.body.email).toEqual(given_email.toLowerCase());
+    expect(response.body.name).toEqual(given_name);
   });
 });
 
@@ -182,7 +180,7 @@ describe("userRoutes /PATCH/:id", () => {
   });
 });
 
-describe("userRoutes /DELETE", () => {
+describe("userRoutes /DELETE/id", () => {
   let testId: string;
 
   test("should delete user and return 200", async () => {

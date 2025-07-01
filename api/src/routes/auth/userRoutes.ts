@@ -25,7 +25,7 @@ router.post(
       );
       res.status(201).json(result.rows[0]);
     } catch (error) {
-      const appErr: AppError = new Error("Failed to fetch users");
+      const appErr: AppError = new Error("Failed to create user");
       appErr.status = 500;
       appErr.cause = error;
       next(appErr);
@@ -114,7 +114,6 @@ router.patch(
       const err: AppError = new Error("Missing user ID");
       err.status = 400;
       next(err);
-      console.error("no user id provided");
       res.status(400).json({ error: "No user ID provided" });
       return;
     }
@@ -145,7 +144,6 @@ router.patch(
         res
           .status(400)
           .json({ error: "No valid field provided for api/user PATCH" });
-        console.error("no valid field for PATCH provided");
         return;
       }
 
