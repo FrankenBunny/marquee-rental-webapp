@@ -54,17 +54,21 @@ describe("itemRoutes /GET", () => {
     });
 
     const response = await request(app).get(endpoint);
+
     expect(response.statusCode).toBe(200);
-    expect(response.body.length).not.toBe(0);
     expect(response.body[0].name).toEqual(name);
     expect(response.body[0].description).toEqual(description);
     expect(response.body[0]).toHaveProperty("id");
-    expect(response.body[0]).toHaveProperty("availability_id");
+    expect(response.body[0].availability).toHaveProperty("id");
+    expect(response.body[0].availability).toHaveProperty("total");
+    expect(response.body[0].availability).toHaveProperty("maintenance");
+    expect(response.body[0].availability).toHaveProperty("broken");
   });
 
-  test("should return 404 if no items exist", async () => {
+  test("should return 200 and empty array if no items exist", async () => {
     const response = await request(app).get(endpoint);
-    expect(response.statusCode).toBe(404);
+    expect(response.statusCode).toBe(200);
+    expect(response.body.length).toBe(0);
   });
 });
 
@@ -86,15 +90,19 @@ describe("itemRoutes /GET/:id", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.length).not.toBe(0);
-    expect(response.body[0].name).toEqual(name);
-    expect(response.body[0].description).toEqual(description);
-    expect(response.body[0]).toHaveProperty("id");
-    expect(response.body[0]).toHaveProperty("availability_id");
+    expect(response.body.name).toEqual(name);
+    expect(response.body.description).toEqual(description);
+    expect(response.body).toHaveProperty("id");
+    expect(response.body.availability).toHaveProperty("id");
+    expect(response.body.availability).toHaveProperty("total");
+    expect(response.body.availability).toHaveProperty("maintenance");
+    expect(response.body.availability).toHaveProperty("broken");
   });
 
   test("should return 404 if not found", async () => {
     const response = await request(app).get(`${endpoint}/${testId}`);
     expect(response.statusCode).toBe(404);
+    expect(response.body).toHaveProperty("error");
   });
 });
 
@@ -123,10 +131,10 @@ describe("itemRoutes /PATCH/:id", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.body.length).not.toBe(0);
-    expect(response.body[0].name).toEqual(updated_name);
-    expect(response.body[0].description).toEqual(updated_description);
-    expect(response.body[0]).toHaveProperty("id");
-    expect(response.body[0]).toHaveProperty("availability_id");
+    expect(response.body.name).toEqual(updated_name);
+    expect(response.body.description).toEqual(updated_description);
+    expect(response.body).toHaveProperty("id");
+    expect(response.body).toHaveProperty("availability_id");
   });
 
   test("should return 404 with invalid id", async () => {
@@ -143,7 +151,7 @@ describe("itemRoutes /PATCH/:id", () => {
 });
 
 describe("itemRoutes /DELETE/id", () => {
-  let testId;
+  let testId: string;
   test("should delete item and return 200 with valid id", async () => {
     const name = "TestItem";
     const description = "Test description";
@@ -158,5 +166,14 @@ describe("itemRoutes /DELETE/id", () => {
     const response = await request(app).delete(`${endpoint}/${testId}`);
 
     expect(response.statusCode).toBe(200);
+    expect(response.body.user.id).toEqual(testId);
+    expect(response.body.user.name).toEqual(name);
+    expect(response.body.user.description).toEqual(description);
+  });
+
+  test("should return 404 if given invalid id", async () => {
+    const response = await request(app).delete(`${endpoint}/${testId}`);
+
+    expect(response.statusCode).toBe(404);
   });
 });

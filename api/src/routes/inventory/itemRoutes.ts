@@ -3,21 +3,35 @@ import type { Response, Request, NextFunction } from "express";
 import db from "../../db/client.js";
 import type { AppError } from "../../middlewares/errorHandler.js";
 import { buildPatchQuery } from "../../services/patchQuery.js";
+import {
+  ItemCreateSchema,
+  ItemSchema,
+  ItemUpdateSchema,
+  ItemWithAvailabilitySchema,
+} from "../../schemas/inventory/item.schema.js";
+import { z } from "zod";
 
 const router: Router = express.Router();
 
 router.post(
   "/item",
   async (req: Request, res: Response, next: NextFunction) => {
-    const { name, description } = req.body;
-
     try {
+      const parsedBody = ItemCreateSchema.parse(req.body);
       const result = await db.query(
         "INSERT INTO item (name, description) VALUES ($1, $2) RETURNING *",
-        [name, description]
+        [parsedBody.name, parsedBody.description ?? null]
       );
-      res.status(201).json(result.rows[0]);
+
+      const parsedItem = ItemSchema.parse(result.rows[0]);
+      res.status(201).json(parsedItem);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        res
+          .status(400)
+          .json({ error: "Validation failed", details: error.errors });
+        return;
+      }
       const appErr: AppError = new Error("Failed to create item");
       appErr.status = 500;
       appErr.cause = error;
@@ -28,13 +42,36 @@ router.post(
 
 router.get("/item", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const result = await db.query("SELECT * FROM item");
+    const result = await db.query(`
+        SELECT 
+        item.id,
+        item.name,
+        item.description,
+        json_build_object(
+            'id', availability.id,
+            'total', availability.total,
+            'maintenance', availability.maintenance,
+            'broken', availability.broken
+        ) AS availability
+        FROM item
+        LEFT JOIN availability 
+        ON availability.id = item.availability_id;
+`);
     if (result.rows.length === 0) {
-      res.status(404).json({ error: "No items found" });
+      res.status(200).json([]);
       return;
     }
-    res.status(200).json(result.rows);
+
+    const parsedItems = z.array(ItemWithAvailabilitySchema).parse(result.rows);
+
+    res.status(200).json(parsedItems);
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      res
+        .status(400)
+        .json({ error: "Validation failed", details: error.errors });
+      return;
+    }
     const appErr: AppError = new Error("Failed to fetch items");
     appErr.status = 500;
     appErr.cause = error;
@@ -47,13 +84,41 @@ router.get(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     try {
-      const result = await db.query("SELECT * FROM item WHERE id = $1", [id]);
+      const result = await db.query(
+        `
+        SELECT 
+        item.id,
+        item.name,
+        item.description,
+        json_build_object(
+            'id', availability.id,
+            'total', availability.total,
+            'maintenance', availability.maintenance,
+            'broken', availability.broken
+        ) AS availability
+        FROM item
+        LEFT JOIN availability 
+        ON availability.id = item.availability_id
+        WHERE item.id = $1;`,
+        [id]
+      );
       if (result.rows.length === 0) {
         res.status(404).json({ error: "No item found with id: " + id });
         return;
+      } else if (result.rows.length !== 1) {
+        res.status(500).json({ error: "Multiple items found with id: " + id });
+        return;
       }
-      res.status(200).json(result.rows);
+
+      const parsedItem = ItemWithAvailabilitySchema.parse(result.rows[0]);
+      res.status(200).json(parsedItem);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        res
+          .status(400)
+          .json({ error: "Validation failed", details: error.errors });
+        return;
+      }
       const appErr: AppError = new Error("Failed to fetch item with id: " + id);
       appErr.status = 500;
       appErr.cause = error;
@@ -66,7 +131,6 @@ router.patch(
   "/item/:id",
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
-    const { name, description } = req.body;
 
     if (!id) {
       const err: AppError = new Error("Missing item ID");
@@ -76,20 +140,22 @@ router.patch(
       return;
     }
 
-    const updates = {
-      name: name,
-      description: description,
-    };
-
-    const patchQuery = await buildPatchQuery(id, updates, {
-      tableName: "item",
-      allowedFields: ["name", "description"],
-      transformFields: async (field, value) => {
-        return value;
-      },
-    });
-
     try {
+      const parsedBody = ItemUpdateSchema.parse(req.body);
+
+      const updates = {
+        name: parsedBody.name,
+        description: parsedBody.description,
+      };
+
+      const patchQuery = await buildPatchQuery(id, updates, {
+        tableName: "item",
+        allowedFields: ["name", "description"],
+        transformFields: async (field, value) => {
+          return value;
+        },
+      });
+
       if (!patchQuery) {
         res.status(400).json({
           error: "No valid field provided for api/inventory/item PATCH",
@@ -103,8 +169,17 @@ router.patch(
         res.status(404).json({ error: "Item not found" });
         return;
       }
-      res.status(200).json(result.rows);
+
+      const parsedItem = ItemSchema.parse(result.rows[0]);
+
+      res.status(200).json(parsedItem);
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        res
+          .status(400)
+          .json({ error: "Validation failed", details: error.errors });
+        return;
+      }
       const appErr: AppError = new Error(
         "Failed to update (PATCH) item with given id: " + id
       );
@@ -128,8 +203,16 @@ router.delete(
         res.status(404).json({ error: "Item not found with id:" + id });
         return;
       }
-      res.status(200).json({ message: "Item deleted", user: result.rows[0] });
+      const parsedItem = ItemSchema.parse(result.rows[0]);
+
+      res.status(200).json({ message: "Item deleted", user: parsedItem });
     } catch (error) {
+      if (error instanceof z.ZodError) {
+        res
+          .status(400)
+          .json({ error: "Validation failed", details: error.errors });
+        return;
+      }
       const appErr: AppError = new Error(
         "Failed to delete item with given id: " + id
       );

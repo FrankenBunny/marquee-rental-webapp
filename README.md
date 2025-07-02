@@ -192,6 +192,13 @@ The inventory management system helps workers to efficiently track and update in
 |Inventory Categories|Allows the users to CRUD categories which are used to categorize items within the inventory.|A user may categorize an item as a tent.|
 |Inventory Tags|Allows the users to CRUD tags which are used to tag items as for example "dirty", "broken", etc.|A user may tag an item as dirty.|
 
+
+#### API Endpoints
+
+|Table|POST|GET|GET:id|PUT:id|PATCH:id|DELETE:id|
+|---|---|---|---|---|---|---|
+|Items|✅|✅|✅|❌|✅|✅|
+
 #### Authorization within Inventory subsystem
 
 The roles associated with the inventory management system have been listed and described in the table below. The roles are listed so that the ones in the top of the table have the most permissions.

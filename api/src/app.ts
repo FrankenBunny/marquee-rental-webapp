@@ -1,6 +1,7 @@
 import express from "express";
 import userRouter from "./routes/auth/userRoutes.js";
 import itemRoutes from "./routes/inventory/itemRoutes.js";
+import availabilityRoutes from "./routes/inventory/availabilityRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import { corsMiddleware } from "./middlewares/corsMiddleware.js";
 
@@ -28,6 +29,8 @@ app.use(corsMiddleware);
 app.use("/api", userRouter);
 
 app.use("/api/inventory/", itemRoutes);
+
+app.use("/api/inventory", availabilityRoutes);
 
 app.use(errorHandler);
 
