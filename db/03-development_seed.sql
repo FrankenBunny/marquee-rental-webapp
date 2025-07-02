@@ -3,6 +3,22 @@ VALUES
   ('Admin', 'Administrator', 'acces@all.now', '123'),
   ('Manager', 'Manager Person', 'some@access.now', '123');
 
+DO
+$$
+DECLARE
+    i INT;
+BEGIN
+    FOR i IN 1..250 LOOP
+        INSERT INTO app_user (username, name, email, password_hash)
+        VALUES (
+            'user' || i,
+            'User ' || i,
+            'user' || i || '@example.com',
+            '123'
+        );
+    END LOOP;
+END
+$$;
 
 -- Rentable seeding
 INSERT INTO rentable (name)
