@@ -29,7 +29,7 @@ CREATE TABLE user_role (
 CREATE TABLE availability (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     total INTEGER DEFAULT 0 NOT NULL,
-    maintanence INTEGER DEFAULT 0 NOT NULL,
+    maintenance INTEGER DEFAULT 0 NOT NULL,
     broken INTEGER DEFAULT 0 NOT NULL
 );
 
