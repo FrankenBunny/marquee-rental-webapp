@@ -2,16 +2,18 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-COPY frontend/package.json ./
-
+# Copy only package.json and install dependencies
+COPY package.json ./
 RUN npm install
 
+# Install serve globally to host the built assets
 RUN npm i -g serve
 
-COPY ./frontend ./
+# Copy all source files including .env
+COPY . ./
 
-COPY .env .env
-
+# Build the production bundle
 RUN npm run build
 
-CMD [ "serve", "-s", "dist" ]
+# Serve the build output
+CMD ["serve", "-s", "dist"]
