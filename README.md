@@ -195,9 +195,198 @@ The inventory management system helps workers to efficiently track and update in
 
 #### API Endpoints
 
+##### CREATE
+```json
+{
+id: [rentable uuid],
+name: "TestRentable",
+description: "Some description.",
+has_parts: true,
+has_extensions: false,
+availability: {
+    total: 10,
+    maintenance: 1,
+    broken: 1,
+},
+parts: [
+    {
+        id: [part id],
+        name: "TestPart",
+        description: "Test description.",
+        interchangeable: true,
+        quantity: 4,
+        rentable_id: [rentable id],
+        variants: [
+            {
+                id: [partVariant id],
+                name: "TestPartVariant",
+                description: "Test description.",
+                part_id: [part id],
+                availability: {
+                    total: 10,
+                    maintenance: 2,
+                    broken: 1,
+                },
+            },
+            {
+                id: "550e8400-e29b-41d4-a716-446655440000",
+                name: "TestPartVariant",
+                description: "Test description.",
+                part_id: [part id],
+                availability: {
+                    total: 10,
+                    maintenance: 1,
+                    broken: 1,
+                },
+            },
+        ],
+    },
+    {
+        id: [part2 id],
+        name: "TestPart",
+        description: "Test description.",
+        interchangeable: false,
+        quantity: 2,
+        rentable_id: [rentable id],
+        availability: {
+            total: 10,
+            maintenance: 2,
+            broken: 1,
+        },
+    }
+]
+}
+```
+
+##### READ
+```json
+{
+id: [rentable uuid],
+name: "TestRentable",
+description: "Some description.",
+has_parts: true,
+has_extensions: false,
+availability: {
+    id: [availabilityX id],
+    total: 10,
+    maintenance: 1,
+    broken: 1,
+},
+parts: [
+    {
+        id: [part id],
+        name: "TestPart",
+        description: "Test description.",
+        interchangeable: true,
+        quantity: 4,
+        rentable_id: [rentable id],
+        variants: [
+            {
+                id: [partVariant id],
+                name: "TestPartVariant",
+                description: "Test description.",
+                part_id: [part id],
+                availability: {
+                    id: [availabilityX id],
+                    total: 10,
+                    maintenance: 2,
+                    broken: 1,
+                },
+            },
+            {
+                id: "550e8400-e29b-41d4-a716-446655440000",
+                name: "TestPartVariant",
+                description: "Test description.",
+                part_id: [part id],
+                availability: {
+                    id: [availabilityX id],
+                    total: 10,
+                    maintenance: 1,
+                    broken: 1,
+                },
+            },
+        ],
+    },
+    {
+        id: [part2 id],
+        name: "TestPart",
+        description: "Test description.",
+        interchangeable: false,
+        quantity: 2,
+        rentable_id: [rentable id],
+        availability: {
+            id: [availabilityX id],
+            total: 10,
+            maintenance: 2,
+            broken: 1,
+        },
+    }
+]
+}
+```
+
+##### UPDATE
+```json
+{
+id: [rentable uuid],
+name: "TestRentable",
+description: "Some description.",
+has_parts: true,
+has_extensions: false,
+parts: [
+    {
+        id: [part id],
+        name: "TestPart",
+        description: "Test description.",
+        interchangeable: true,
+        quantity: 4,
+        rentable_id: [rentable id],
+        variants: [
+            {
+                id: [partVariant id],
+                name: "TestPartVariant",
+                description: "Test description.",
+                part_id: [part id],
+            },
+            {
+                id: "550e8400-e29b-41d4-a716-446655440000",
+                name: "TestPartVariant",
+                description: "Test description.",
+                part_id: [part id],
+            },
+        ],
+    },
+    {
+        id: [part2 id],
+        name: "TestPart",
+        description: "Test description.",
+        interchangeable: false,
+        quantity: 2,
+        rentable_id: [rentable id],
+    }
+]
+}
+```
+```
+availability: {
+    id: [availability id],
+    total: 10,
+    maintenance: 2,
+    broken: 1,
+}
+```
+
+##### DELETE
+Separated 
+
 |Table|POST|GET|GET:id|PUT:id|PATCH:id|DELETE:id|
 |---|---|---|---|---|---|---|
 |Items|✅|✅|✅|❌|✅|✅|
+|Rentable|✅|✅|✅|❌|✅|✅|
+
+#### Transactions
+
+
 
 #### Authorization within Inventory subsystem
 
