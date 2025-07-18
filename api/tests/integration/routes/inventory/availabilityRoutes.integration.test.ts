@@ -1,6 +1,7 @@
 import {
   beforeEach,
   afterAll,
+  afterEach,
   describe,
   expect,
   test,
@@ -17,12 +18,16 @@ beforeAll(async () => {
   await db.connect();
 });
 
-beforeEach(async () => {
-  await db.query("TRUNCATE TABLE item RESTART IDENTITY CASCADE");
-});
-
 afterAll(async () => {
   await db.disconnect();
+});
+
+beforeEach(async () => {
+  await db.query("BEGIN");
+});
+
+afterEach(async () => {
+  await db.query("ROLLBACK");
 });
 
 describe("availabilityRoutes /GET/:id", () => {

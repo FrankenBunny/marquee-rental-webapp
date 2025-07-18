@@ -266,7 +266,6 @@ describe("RentableUpdate Schema", () => {
     };
 
     const result = RentableUpdate.safeParse(data);
-    console.error(result.error);
     expect(result.success).toBe(true);
   });
 
