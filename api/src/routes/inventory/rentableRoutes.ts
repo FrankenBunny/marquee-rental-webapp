@@ -7,14 +7,17 @@ import {
   Rentable,
   RentableCreate,
 } from "../../schemas/inventory/rentable.schema.js";
-import type { PartCreate } from "../../schemas/inventory/part.schema.js";
+import type {
+  Part,
+  PartCreateAsComponent,
+} from "../../schemas/inventory/part.schema.js";
 import type { AvailabilitySchema } from "../../schemas/inventory/availability.schema.js";
 
 /*
  * SERVICE FUNCTIONS FOR QUERY AND FORMATTING RESPONSES
  */
 type RawRentableRow = {
-  id: string;
+  rentable_id: string;
   name: string;
   description: string | null;
   has_parts: boolean;
@@ -24,27 +27,135 @@ type RawRentableRow = {
   broken: number;
 };
 
+type RawPartRow = {
+  part_id: string;
+  name: string;
+  description: string | null;
+  interchangeable: boolean;
+  quantity: number;
+  rentable_id: string;
+  availability_id: string;
+  total: number;
+  maintenance: number;
+  broken: number;
+};
+
 async function formatRentableCreate(
   row: RawRentableRow,
-  parts: z.infer<typeof PartCreate>[] | null
+  parts: RawPartRow[] | null
 ) {
-  const availability: z.infer<typeof AvailabilitySchema> = {
+  const formattedAvailability: z.infer<typeof AvailabilitySchema> = {
     id: row.availability_id,
     total: row.total,
     maintenance: row.maintenance,
     broken: row.broken,
   };
 
-  const rentable: z.infer<typeof Rentable> = {
-    id: row.id,
+  const formattedParts: z.infer<typeof Part>[] | null =
+    parts?.map((part) => ({
+      id: part.part_id,
+      name: part.name,
+      description: part.description,
+      interchangeable: part.interchangeable,
+      quantity: part.quantity,
+      availability: {
+        id: part.availability_id,
+        total: part.total,
+        maintenance: part.maintenance,
+        broken: part.broken,
+      },
+      variants: null, // or populate if applicable
+      rentable_id: part.rentable_id,
+    })) ?? null;
+
+  const formattedRentable: z.infer<typeof Rentable> = {
+    id: row.rentable_id,
     name: row.name,
     description: row.description,
     has_parts: row.has_parts,
-    availability: availability,
-    parts: null,
+    availability: formattedAvailability,
+    parts: formattedParts,
   };
 
-  return rentable;
+  return formattedRentable;
+}
+
+// TODO FIX ERROR HANDLING
+async function retrieveCreatedRentable(id: string) {
+  const rentable_result = await db.query(
+    `SELECT 
+        r.id as rentable_id, 
+        r.name, 
+        r.description, 
+        r.has_parts, 
+        a.id as availability_id, 
+        a.total, 
+        a.maintenance, 
+        a.broken
+       FROM rentable r
+       JOIN availability a ON r.availability_id = a.id
+       WHERE r.id = $1`,
+    [id]
+  );
+
+  if (!rentable_result.rows.length) {
+    throw new Error("Failed to fetch availability for rentable");
+  }
+
+  const part_result = await db.query(
+    `
+    SELECT
+      p.id as part_id,
+      p.name,
+      p.description,
+      p.interchangeable,
+      p.quantity,
+      p.rentable_id,
+      a.id as availability_id,
+      a.total,
+      a.maintenance,
+      a.broken
+    FROM part p
+    JOIN availability a ON p.availability_id = a.id
+    WHERE p.rentable_id = $1`,
+    [id]
+  );
+
+  return await formatRentableCreate(
+    rentable_result.rows[0],
+    part_result.rows.length ? part_result.rows : null
+  );
+}
+
+// TODO FIX ERROR HANDLING
+async function queryPartCreateAsComponent(
+  parsedData: z.infer<typeof PartCreateAsComponent>[],
+  rentable_id: string
+) {
+  try {
+    for (const part of parsedData) {
+      const part_result = await db.query(
+        `INSERT INTO part (name, description, interchangeable, quantity, rentable_id)
+        VALUES ($1, $2, $3, $4, $5)
+        RETURNING id, name, description, interchangeable, quantity, rentable_id`,
+        [
+          part.name,
+          part.description ?? null,
+          part.interchangeable,
+          part.quantity,
+          rentable_id,
+        ]
+      );
+      if (!part_result.rows.length) {
+        throw new Error("Part insert returned no rows");
+      }
+    }
+
+    return;
+  } catch (error) {
+    await db.query("ROLLBACK");
+    throw error;
+  }
 }
 
 // TODO FIX ERROR HANDLING
@@ -71,8 +182,8 @@ async function queryRentableCreate(parsedData: z.infer<typeof RentableCreate>) {
         SET total = $1,
             maintenance = $2,
             broken = $3
-       WHERE id = $4
-       RETURNING id, total, maintenance, broken`,
+        WHERE id = $4
+        RETURNING id, total, maintenance, broken`,
         [
           parsedData.availability.total,
           parsedData.availability.maintenance,
@@ -86,24 +197,6 @@ async function queryRentableCreate(parsedData: z.infer<typeof RentableCreate>) {
     await db.query("ROLLBACK");
     throw error;
   }
-}
-
-// TODO FIX ERROR HANDLING
-
-async function retrieveCreatedRentable(id: string) {
-  const full_result = await db.query(
-    `SELECT r.id, r.name, r.description, r.has_parts, a.id as availability_id, a.total, a.maintenance, a.broken
-       FROM rentable r
-       JOIN availability a ON r.availability_id = a.id
-       WHERE r.id = $1`,
-    [id]
-  );
-
-  if (!full_result.rows.length) {
-    throw new Error("Failed to fetch availability for rentable");
-  }
-
-  return await formatRentableCreate(full_result.rows[0], null);
 }
 
 /*
@@ -121,6 +214,10 @@ router.post(
 
       const rentableID = await queryRentableCreate(parsedBody);
 
+      if (parsedBody.parts != null) {
+        await queryPartCreateAsComponent(parsedBody.parts, rentableID);
+      }
+
       const result = await retrieveCreatedRentable(rentableID);
 
       await db.query("COMMIT");
@@ -135,6 +232,7 @@ router.post(
       const appErr: AppError = new Error("Failed to create rentable");
       appErr.status = 500;
       appErr.cause = error;
+
       next(appErr);
     }
   }

@@ -3,7 +3,7 @@ import {
   AvailabilityCreate,
   AvailabilitySchema,
 } from "./availability.schema.js";
-import { Part, PartCreate, PartUpdate } from "./part.schema.js";
+import { Part, PartCreateAsComponent, PartUpdate } from "./part.schema.js";
 
 export const Rentable = z
   .object({
@@ -47,7 +47,7 @@ export const RentableCreate = z
       .nullable(),
     availability: AvailabilityCreate,
     has_parts: z.boolean(),
-    parts: z.array(PartCreate).nullable(),
+    parts: z.array(PartCreateAsComponent).nullable(),
   })
   .refine((data) => !(data.has_parts && data.parts === null), {
     message: "Rentable: If has_parts, parts must exist.",

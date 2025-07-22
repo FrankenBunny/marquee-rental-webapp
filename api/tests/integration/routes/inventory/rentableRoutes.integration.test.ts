@@ -109,7 +109,56 @@ describe("rentableRoutes /POST", () => {
     expect(result.statusCode).toBe(201);
   });
 
-  test("should create rentable with non-interchaneable part and return 201 with valid input", async () => {
+  test("should create rentable with complete availability and w/o parts and return rentable json with correct values with valid input", async () => {
+    const name = "TestRentable /POST";
+    const description = "Test description.";
+
+    const result = await request(app)
+      .post(endpoint)
+      .send({
+        name: name,
+        description: description,
+        has_parts: false,
+        availability: {
+          total: 10,
+          maintenance: 2,
+          broken: 1,
+        },
+        parts: null,
+      });
+
+    expect(result.statusCode).toBe(201);
+    expect(result.body).toHaveProperty("id");
+    expect(result.body.name).toBe(name);
+    expect(result.body.description).toBe(description);
+    expect(result.body.has_parts).toBe(false);
+    expect(result.body).toHaveProperty("availability");
+    expect(result.body.availability).toHaveProperty("id");
+    expect(result.body.availability.total).toEqual(10);
+    expect(result.body.availability.maintenance).toEqual(2);
+    expect(result.body.availability.broken).toEqual(1);
+  });
+
+  test("should create rentable with partial availability and without parts and return 201 with valid input", async () => {
+    const name = "TestRentable /POST";
+    const description = "Test description.";
+
+    const result = await request(app)
+      .post(endpoint)
+      .send({
+        name: name,
+        description: description,
+        has_parts: false,
+        availability: {
+          total: 10,
+        },
+        parts: null,
+      });
+
+    expect(result.statusCode).toBe(201);
+  });
+
+  test("should create rentable with non-interchangeable part and return 201 with valid input", async () => {
     const name = "TestRentable /POST";
     const description = "Test description.";
     const part_name = "TestPart /POST";
@@ -119,68 +168,22 @@ describe("rentableRoutes /POST", () => {
       .send({
         name: name,
         description: description,
-        has_parts: false,
+        has_parts: true,
         availability: {},
         parts: [
           {
             name: part_name,
             description: description,
             quantity: 4,
+            interchangeable: false,
+            variants: null,
+            availability: {},
           },
         ],
       });
 
     expect(result.statusCode).toBe(201);
   });
-});
-
-test("should create rentable with complete availability and w/o parts and return rentable json with correct values with valid input", async () => {
-  const name = "TestRentable /POST";
-  const description = "Test description.";
-
-  const result = await request(app)
-    .post(endpoint)
-    .send({
-      name: name,
-      description: description,
-      has_parts: false,
-      availability: {
-        total: 10,
-        maintenance: 2,
-        broken: 1,
-      },
-      parts: null,
-    });
-
-  expect(result.statusCode).toBe(201);
-  expect(result.body).toHaveProperty("id");
-  expect(result.body.name).toBe(name);
-  expect(result.body.description).toBe(description);
-  expect(result.body.has_parts).toBe(false);
-  expect(result.body).toHaveProperty("availability");
-  expect(result.body.availability).toHaveProperty("id");
-  expect(result.body.availability.total).toEqual(10);
-  expect(result.body.availability.maintenance).toEqual(2);
-  expect(result.body.availability.broken).toEqual(1);
-});
-
-test("should create rentable with partial availability and without parts and return 201 with valid input", async () => {
-  const name = "TestRentable /POST";
-  const description = "Test description.";
-
-  const result = await request(app)
-    .post(endpoint)
-    .send({
-      name: name,
-      description: description,
-      has_parts: false,
-      availability: {
-        total: 10,
-      },
-      parts: null,
-    });
-
-  expect(result.statusCode).toBe(201);
 });
 
 describe.todo("rentableRoutes /GET", () => {
