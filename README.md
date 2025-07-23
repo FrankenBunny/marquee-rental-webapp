@@ -16,6 +16,7 @@ Web application for a marquee rental service company.  Developed for internal us
         1. [Issues](#issues)
     3. [TDD and running tests](#tdd-and-running-tests)
     4. [Server setup with Cloudflare tunnel](#server-setup-with-cloudflare-tunnel)
+    5. [SSH to server](#ssh-to-server)
 2. [Features](#features)
     1. [(AA) Authenication and Authorization](#authenication-and-authorization)
     2. [(IMS) Inventory Management System](#inventory-management-system)
@@ -216,6 +217,41 @@ This sets up cloudflared as a systemd service and runs it in the background — 
 | Local service down    | Use `docker ps` to verify containers are running                   |
 | Test locally          | Run `curl -I http://localhost:3000`                                |
 
+
+### SSH to server
+On the device you’ll connect from, install cloudflared.
+On macOS:
+```bash
+brew install cloudflared
+```
+
+On Linux:
+```bash
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared-linux-amd64.deb
+```
+
+To connect to the server use this one-liner:
+```bash
+ssh -o ProxyCommand="cloudflared access ssh --hostname ssh.qkeliq.eu" waup@ssh.qkeliq.eu
+```
+
+If you rather use a shorter version, then you can add this to your ssh config file (else skip this last part):
+```bash
+nano ~/.ssh/confi
+```
+Add:
+```bash
+Host qkeliq
+  HostName ssh.qkeliq.eu
+  User waup
+  ProxyCommand cloudflared access ssh --hostname %h
+```
+
+Lastly connect with:
+```bash
+ssh pi
+```
 
 #### Issues
 
