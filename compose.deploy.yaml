@@ -1,14 +1,25 @@
 services:
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile.deploy
+      context: ./frontend
+      dockerfile: Dockerfile.deploy
     env_file:
       - .env
+    environment:
+      NODE_ENV: production
     ports:
       - ${FRONTEND_PORT}:${FRONTEND_PORT} 
     depends_on:
       - api
+    develop:
+      watch:
+        - action: sync
+          path: ./frontend
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
 
   api:
     build:
@@ -27,6 +38,15 @@ services:
     depends_on:
       db:
         condition: service_healthy 
+    develop:
+      watch:
+        - action: sync
+          path: ./api
+          target: /app
+          ignore:
+            - node_modules/
+        - action: rebuild
+          path: package.json
 
   db:
     image: postgres:17
@@ -47,5 +67,24 @@ services:
     ports:
       - ${DB_PORT}:${DB_PORT}
 
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container
+    env_file:
+      - .env
+    profiles: [tools]
+    restart: always
+    ports:
+      - ${PGADMIN_PORT}:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy 
+
 volumes:
   db-data:
+  pgadmin-data:
