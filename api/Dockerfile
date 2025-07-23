@@ -1,16 +1,13 @@
-# LTS as of 2025-07-17
 FROM node:22.16
 
 WORKDIR /app
 
 COPY package*.json ./
-
-RUN npm install --omit=dev
+RUN npm install --omit=dev  # Prod image = inga devDependencies
 
 COPY . .
 
-RUN npm run build
+RUN npx tsc -p tsconfig.build.json  # ⬅️ Bygg bara src/, inga tester
 
-RUN ls -l dist
+CMD ["node", "dist/src/server.js"]
 
-CMD ["npm", "start"]
