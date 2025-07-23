@@ -253,7 +253,7 @@ Lastly connect with:
 ssh pi
 ```
 
-#### Issues
+### Issues
 
 1. Open the issue on github.com
 2. Assign the issue to yourself.
