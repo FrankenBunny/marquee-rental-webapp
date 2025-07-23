@@ -7,7 +7,9 @@
         "docker:backend": "docker-compose -f compose.dev.yaml up --no deps -d backend"
     },
     "dependencies": {
-        "cors": "^2.8.5"
+        "cors": "^2.8.5",
+        "dotenv": "^17.2.0",
+        "zod": "^4.0.5"
     },
     "devDependencies": {
         "vite": "^7.0.5"

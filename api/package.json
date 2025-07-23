@@ -18,15 +18,8 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
-  
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express": "^5.1.0",
-    "pg": "^8.16.2",
-    "ts-node": "^10.9.2",
-    "zod": "^3.25.67",
-    
-
+    "dotenv": "^16.0.3",
+    "zod": "^3.22.2",
     "@eslint/js": "^9.29.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
