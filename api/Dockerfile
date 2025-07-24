@@ -1,27 +1,16 @@
-# 🛠️ Steg 1: Build stage
-FROM node:22.16 AS builder
+FROM node:18-alpine
 
-FROM node:22.16
+WORKDIR /api
 
-WORKDIR /app
-COPY package*.json ./
-
+# Copy only package.json and install dependencies
+COPY package.json .
 RUN npm install
-COPY . .
-RUN npm run build
 
-# 🚀 Steg 2: Runtime stage
-FROM node:22.16
-WORKDIR /app
-COPY package*.json ./
-RUN npm install --omit=dev
-COPY --from=builder /app/dist ./dist
-CMD ["node", "dist/src/server.js"]
+# Install serve globally to host the built assets
+RUN npm i -g serve
 
-RUN npm install --omit=dev  # Prod image = inga devDependencies
-
+# Copy all source files including .env
 COPY . .
 
-RUN npx tsc -p tsconfig.build.json  # ⬅️ Bygg bara src/, inga tester
-
-CMD ["node", "dist/src/server.js"]
+# Serve the build output
+CMD ["serve", "-s", "dist"]
