@@ -1,6 +1,6 @@
 FROM node:18-alpine
 
-WORKDIR /api
+WORKDIR /app
 
 # Copy only package.json and install dependencies
 COPY package.json .
