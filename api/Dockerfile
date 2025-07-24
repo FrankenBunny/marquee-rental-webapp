@@ -1,16 +1,16 @@
-# LTS as of 2025-07-17
-FROM node:22.16
+FROM node:18-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
+# Copy only package.json and install dependencies
+COPY package.json .
+RUN npm install
 
-RUN npm install --omit=dev
+# Install serve globally to host the built assets
+RUN npm i -g serve
 
+# Copy all source files including .env
 COPY . .
 
-RUN npm run build
-
-RUN ls -l dist
-
-CMD ["npm", "start"]
+# Serve the build output
+CMD ["serve", "-s", "dist"]
