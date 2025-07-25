@@ -15,6 +15,8 @@ Web application for a marquee rental service company.  Developed for internal us
     2. [Workflow](#workflow)
         1. [Issues](#issues)
     3. [TDD and running tests](#tdd-and-running-tests)
+    4. [Server setup with Cloudflare tunnel](#server-setup-with-cloudflare-tunnel)
+    5. [SSH to server](#ssh-to-server)
 2. [Features](#features)
     1. [(AA) Authenication and Authorization](#authenication-and-authorization)
     2. [(IMS) Inventory Management System](#inventory-management-system)
@@ -122,7 +124,136 @@ The tests can be automatically executed by running the [script](/tests/run-api-t
 >[!NOTE]
 > The script returns 0 if all lint succeed and 1 if not. These results may be used in CICD pipeline to prevent code that did not pass the lint to be pushed to production.
 
-#### Issues
+### Server setup with Cloudflare tunnel
+
+# Hosting Docker Web App with Cloudflare Tunnel on Raspberry Pi
+
+This guide shows how to self-host a Dockerized web app on a Raspberry Pi using **Cloudflare Tunnel** — without needing port forwarding, nginx, or TLS setup.
+
+---
+
+## ✅ Requirements
+
+- Raspberry Pi with Docker & Docker Compose installed
+- A domain name on Cloudflare (e.g. `qkeliq.eu`)
+- A Cloudflare account
+
+---
+
+## 🔧 Step 1: Install `cloudflared`
+
+```bash
+# Add Cloudflare's apt repo
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /etc/apt/keyrings/cloudflare-main.gpg > /dev/null
+echo "deb [signed-by=/etc/apt/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared bullseye main" | sudo tee /etc/apt/sources.list.d/cloudflared.list > /dev/null
+
+# Install
+```bash
+sudo apt update
+sudo apt install cloudflared
+```
+
+## 🔐 Step 2: Authenticate with Cloudflare
+
+```bash
+cloudflared tunnel login
+```
+this will open your browser to log in to Cloudflare and authorize the machine.
+
+## 🚇 Step 3: Create Tunnel
+
+```bash
+cloudflared tunnel create my-tunnel
+```
+Note the generated tunnel ID and credentials JSON file path.
+
+## 🌐 Step 4: Configure Tunnel
+
+Create the config file:
+```bash
+sudo nano /etc/cloudflared/config.ym
+```
+Paste the following (or just fill in hostname and such if needed..):
+```bash
+tunnel: my-tunnel
+credentials-file: /home/USERNAME/.cloudflared/TUNNEL_ID.json
+
+ingress:
+  - hostname: qkeliq.eu
+    service: http://localhost:3000
+  - service: http_status:404
+
+```
+Replace USERNAME with the computers user and TTUNEL_ID.json wih the actual JSON filename.
+
+
+## 🌍 Step 5: Route Domain to Tunnel
+
+Delete any existing A or CNAME record for qkeliq.eu in the Cloudflare DNS dashboard, then run:
+```bash
+cloudflared tunnel route dns my-tunnel qkeliq.eu
+```
+This will automatically create a proper CNAME that routes to your tunnel.
+Make sure your application is listtening on the correct port, eg. port 3000.
+
+
+## 🛠️ Step 6: Start Tunnel as a Service
+
+Run:
+```bash
+sudo cloudflared service install
+sudo systemctl start cloudflared
+sudo systemctl enable cloudflared
+```
+This sets up cloudflared as a systemd service and runs it in the background — even after reboot.
+
+## 🧰 Troubleshooting
+
+| Problem               | Fix                                                                |
+| --------------------- | ------------------------------------------------------------------ |
+| `521 Web Server Down` | Make sure your frontend is running and listening on the right port |
+| Tunnel doesn't start  | Check logs: `journalctl -u cloudflared -e`                         |
+| Local service down    | Use `docker ps` to verify containers are running                   |
+| Test locally          | Run `curl -I http://localhost:3000`                                |
+
+
+### SSH to server
+On the device you’ll connect from, install cloudflared.
+On macOS:
+```bash
+brew install cloudflared
+```
+
+On Linux:
+```bash
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared-linux-amd64.deb
+```
+
+To connect to the server use this one-liner:
+```bash
+ssh -o ProxyCommand="cloudflared access ssh --hostname ssh.qkeliq.eu" waup@ssh.qkeliq.eu
+```
+
+If you rather use a shorter version, then you can add this to your ssh config file (else skip this last part):
+```bash
+nano ~/.ssh/confi
+```
+Add:
+```bash
+Host qkeliq
+  HostName ssh.qkeliq.eu
+  User waup
+  ProxyCommand cloudflared access ssh --hostname %h
+```
+
+Lastly connect with:
+```bash
+ssh pi
+```
+
+### Issues
 
 1. Open the issue on github.com
 2. Assign the issue to yourself.
