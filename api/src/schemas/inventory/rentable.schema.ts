@@ -3,7 +3,7 @@ import {
   AvailabilityCreate,
   AvailabilitySchema,
 } from "./availability.schema.js";
-import { Part, PartCreateAsComponent, PartUpdate } from "./part.schema.js";
+import { Part, PartCreateRequest, PartUpdate } from "./part.schema.js";
 
 export const Rentable = z
   .object({
@@ -34,7 +34,7 @@ export const Rentable = z
     }
   );
 
-export const RentableCreate = z
+export const RentableCreateRequest = z
   .object({
     name: z
       .string()
@@ -45,9 +45,9 @@ export const RentableCreate = z
       .min(1, "Rentable: description must contain at least one character.")
       .max(255, "Rentable: description exceeds limit of 255 characters.")
       .nullable(),
-    availability: AvailabilityCreate,
+    availability: AvailabilityCreate.nullable(),
     has_parts: z.boolean(),
-    parts: z.array(PartCreateAsComponent).nullable(),
+    parts: z.array(PartCreateRequest).nullable(),
   })
   .refine((data) => !(data.has_parts && data.parts === null), {
     message: "Rentable: If has_parts, parts must exist.",
@@ -61,6 +61,21 @@ export const RentableCreate = z
       path: ["parts"],
     }
   );
+
+export const RentableCreateResponse = z.object({
+  id: z.string().uuid("Rentable: id must be valid UUID"),
+  name: z
+    .string()
+    .min(1, "Rentable: name must contain at least one character.")
+    .max(32, "Rentable: name exceeds limit of 32 characters."),
+  description: z
+    .string()
+    .min(1, "Rentable: description must contain at least one character.")
+    .max(255, "Rentable: description exceeds limit of 255 characters.")
+    .nullable(),
+  availability: AvailabilitySchema,
+  has_parts: z.boolean(),
+});
 
 export const RentableUpdate = z
   .object({

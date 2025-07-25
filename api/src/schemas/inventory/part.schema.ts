@@ -84,8 +84,50 @@ export const PartCreate = z
       "PartCreate: If interchangeable is true, availability must be null.",
     path: ["availability"],
   })
-  .refine((data) => !(!data.interchangeable && data.availability === null), {
-    message: "PartCreate: If not interchangeable, availability must exist.",
+  .refine((data) => !(data.interchangeable && data.variants === null), {
+    message: "PartCreate: If interchangeable, variants must exist.",
+    path: ["parts"],
+  })
+  .refine(
+    (data) =>
+      !(
+        data.interchangeable &&
+        data.variants !== null &&
+        data.variants.length === 0
+      ),
+    {
+      message: "Part: If interchangeable, variants may not be empty.",
+      path: ["variants"],
+    }
+  )
+  .refine((data) => !(!data.interchangeable && data.variants !== null), {
+    message: "PartCreate: If not interchangeable, variants cannot exist.",
+    path: ["variants"],
+  });
+
+export const PartCreateRequest = z
+  .object({
+    name: z
+      .string()
+      .min(1, "PartCreate: name must contain at least one character.")
+      .max(32, "PartCreate: name exceeds limit of 32 characters."),
+    description: z
+      .string()
+      .min(1, "PartCreate: description must contain at least one character.")
+      .max(255, "PartCreate: description exceeds limit of 255 characters.")
+      .nullable(),
+    interchangeable: z.boolean(),
+    rentable_id: z.string().uuid().optional(),
+    quantity: z
+      .number()
+      .int()
+      .positive("PartCreate: Quantity must positive integer."),
+    availability: AvailabilityCreate.nullable(),
+    variants: z.array(PartVariantCreate).nullable(),
+  })
+  .refine((data) => !(data.interchangeable && data.availability !== null), {
+    message:
+      "PartCreate: If interchangeable is true, availability must be null.",
     path: ["availability"],
   })
   .refine((data) => !(data.interchangeable && data.variants === null), {
@@ -109,8 +151,9 @@ export const PartCreate = z
     path: ["variants"],
   });
 
-export const PartCreateAsComponent = z
+export const PartCreateResponse = z
   .object({
+    id: z.string().uuid("Part: id must be valid UUID"),
     name: z
       .string()
       .min(1, "PartCreate: name must contain at least one character.")
@@ -121,41 +164,17 @@ export const PartCreateAsComponent = z
       .max(255, "PartCreate: description exceeds limit of 255 characters.")
       .nullable(),
     interchangeable: z.boolean(),
+    rentable_id: z.string().uuid(),
     quantity: z
       .number()
       .int()
       .positive("PartCreate: Quantity must positive integer."),
-    availability: AvailabilityCreate.nullable(),
-    variants: z.array(PartVariantCreate).nullable(),
+    availability: AvailabilitySchema.nullable(),
   })
   .refine((data) => !(data.interchangeable && data.availability !== null), {
     message:
       "PartCreate: If interchangeable is true, availability must be null.",
     path: ["availability"],
-  })
-  .refine((data) => !(!data.interchangeable && data.availability === null), {
-    message: "PartCreate: If not interchangeable, availability must exist.",
-    path: ["availability"],
-  })
-  .refine((data) => !(data.interchangeable && data.variants === null), {
-    message: "PartCreate: If interchangeable, variants must exist.",
-    path: ["parts"],
-  })
-  .refine(
-    (data) =>
-      !(
-        data.interchangeable &&
-        data.variants !== null &&
-        data.variants.length === 0
-      ),
-    {
-      message: "Part: If interchangeable, variants may not be empty.",
-      path: ["variants"],
-    }
-  )
-  .refine((data) => !(!data.interchangeable && data.variants !== null), {
-    message: "PartCreate: If not interchangeable, variants cannot exist.",
-    path: ["variants"],
   });
 
 export const PartUpdate = z

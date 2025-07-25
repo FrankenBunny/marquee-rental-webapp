@@ -1,23 +1,7 @@
-import {
-  beforeAll,
-  afterAll,
-  beforeEach,
-  describe,
-  expect,
-  test,
-  afterEach,
-} from "vitest";
+import { beforeEach, describe, expect, test, afterEach } from "vitest";
 import db from "../../../../src/db/client.js";
 import app from "../../../../src/app.js";
 import request from "supertest";
-
-beforeAll(async () => {
-  await db.connect();
-});
-
-afterAll(async () => {
-  await db.disconnect();
-});
 
 beforeEach(async () => {
   await db.query("BEGIN");
