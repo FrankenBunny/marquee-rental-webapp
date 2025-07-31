@@ -1,9 +1,57 @@
 import type z from "zod";
 import db from "../../db/client.js";
 import { RentableCreateRequest } from "../../schemas/inventory/rentable.schema.js";
+
 export async function getAllRentables() {
-  const result = await db.query(`SELECT * FROM rentable`);
+  const result = await db.query(
+    `
+    SELECT 
+        r.id,
+        r.name,
+        r.description,
+        r.has_parts,
+        a.id as availability_id,
+        a.total,
+        a.maintenance,
+        a.broken
+    FROM rentable r
+    JOIN availability a
+    ON r.availability_id = a.id
+    `
+  );
+
   return result.rows;
+}
+
+export async function getRentableById(id: string) {
+  const result = await db.query(
+    `
+    SELECT 
+        r.id,
+        r.name,
+        r.description,
+        r.has_parts,
+        a.id as availability_id,
+        a.total,
+        a.maintenance,
+        a.broken
+    FROM rentable r
+    JOIN availability a
+    ON r.availability_id = a.id
+    WHERE r.id = $1
+    `,
+    [id]
+  );
+
+  if (result.rowCount && result.rowCount > 1) {
+    throw new Error(`RentableModel getRentableById: Returned more than 1 row`);
+  }
+
+  if (result.rowCount === 0) {
+    return undefined;
+  }
+
+  return result.rows[0];
 }
 
 export async function createRentable(
@@ -59,4 +107,16 @@ export async function createRentable(
   );
 
   return full_result.rows[0];
+}
+
+export async function deleteRentable(id: string) {
+  const result = await db.query(
+    `
+    DELETE FROM rentable
+    WHERE id = $1
+    `,
+    [id]
+  );
+
+  return result.rows[0];
 }

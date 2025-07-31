@@ -50,7 +50,6 @@ CREATE TABLE part (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     name VARCHAR(32) NOT NULL UNIQUE,
     description VARCHAR(255),
-    interchangeable BOOLEAN DEFAULT FALSE NOT NULL,
     quantity INTEGER DEFAULT 0 NOT NULL,
     rentable_id UUID NOT NULL,
     availability_id UUID,
@@ -163,30 +162,3 @@ CREATE TRIGGER on_part_insert_update_rentable
 AFTER INSERT ON part
 FOR EACH ROW
 EXECUTE FUNCTION update_rentable_has_parts();
-
-
--- If part variants are added to part
-CREATE OR REPLACE FUNCTION update_part_as_interchangeable()
-RETURNS TRIGGER AS $$
-DECLARE
-    part_availability_id UUID;
-BEGIN
-    SELECT availability_id INTO part_availability_id
-    FROM part
-    WHERE id = NEW.part_id;
-
-    DELETE FROM availability WHERE id = part_availability_id;
-
-    UPDATE part
-    SET interchangeable = TRUE,
-        availability_id = NULL
-    WHERE id = NEW.part_id;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-
-CREATE TRIGGER on_part_variant_insert_update_part
-AFTER INSERT ON part_variant
-FOR EACH ROW
-EXECUTE FUNCTION update_part_as_interchangeable();

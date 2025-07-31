@@ -1,9 +1,37 @@
 import type z from "zod";
 import db from "../../db/client.js";
-import type { PartCreate } from "../../schemas/inventory/part.schema.js";
+import type {
+  PartCreate,
+  PartUpdate,
+} from "../../schemas/inventory/part.schema.js";
+import { buildPatchQuery } from "../../services/patchQuery.js";
 
 export async function getAllParts() {
   const result = await db.query(`SELECT * FROM part`);
+  return result.rows;
+}
+
+export async function getPartsByRentableId(id: string) {
+  const result = await db.query(
+    `
+    SELECT
+      p.id,
+      p.name,
+      p.description,
+      p.quantity,
+      p.rentable_id,
+      a.id as availability_id,
+      a.total,
+      a.maintenance,
+      a.broken
+    FROM part p
+    JOIN availability a
+    ON p.availability_id = a.id
+    WHERE rentable_id = $1
+    `,
+    [id]
+  );
+
   return result.rows;
 }
 
@@ -11,15 +39,14 @@ export async function createPart(parsedPart: z.infer<typeof PartCreate>) {
   const insert_result = await db.query(
     `
     INSERT INTO part 
-        (name, description, interchangeable, quantity, rentable_id)
+        (name, description, quantity, rentable_id)
     VALUES 
-        ($1, $2, $3, $4, $5)
-    RETURNING id, name, description, interchangeable, quantity, rentable_id, availability_id
+        ($1, $2, $3, $4)
+    RETURNING id, name, description, quantity, rentable_id, availability_id
     `,
     [
       parsedPart.name,
       parsedPart.description ?? null,
-      parsedPart.interchangeable,
       parsedPart.quantity,
       parsedPart.rentable_id,
     ]
@@ -49,7 +76,6 @@ export async function createPart(parsedPart: z.infer<typeof PartCreate>) {
         p.id,
         p.name,
         p.description,
-        p.interchangeable,
         p.quantity,
         p.rentable_id,
         a.id as availability_id,
@@ -65,4 +91,41 @@ export async function createPart(parsedPart: z.infer<typeof PartCreate>) {
   );
 
   return full_result.rows[0];
+}
+
+export async function updatePart(
+  id: string,
+  parsedPart: z.infer<typeof PartUpdate>
+) {
+  const patchQueryResult = await buildPatchQuery(id, parsedPart, {
+    tableName: "part",
+    allowedFields: ["name", "description", "quantity", "availability"],
+    transformFields: (field, value) => {
+      if (typeof value === "string") {
+        return value.trim();
+      }
+      return value;
+    },
+  });
+
+  if (!patchQueryResult) {
+    throw new Error("No valid fields to update");
+  }
+
+  const result = await db.query(
+    patchQueryResult.query,
+    patchQueryResult.values
+  );
+
+  return result.rows[0];
+}
+
+export async function deletePart(id: string) {
+  return await db.query(
+    `
+    DELETE FROM part
+    WHERE id = $1
+    `,
+    [id]
+  );
 }

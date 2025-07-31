@@ -1,12 +1,112 @@
 import type z from "zod";
 import * as RentableModel from "../../model/inventory/rentable.model.js";
+import * as PartService from "../../services/inventory/part.service.js";
 import {
+  Rentable,
   RentableCreateRequest,
   RentableCreateResponse,
+  RentableUpdate,
 } from "../../schemas/inventory/rentable.schema.js";
+import { PartCreate } from "../../schemas/inventory/part.schema.js";
 
 export async function getRentables() {
-  return await RentableModel.getAllRentables();
+  const rentableRows = await RentableModel.getAllRentables();
+
+  const parsedRentables = [];
+
+  for (const row of rentableRows) {
+    let parsedRentable;
+
+    if (row.has_parts) {
+      const parsedParts = await PartService.getPartsByRentableId(row.id);
+      parsedRentable = Rentable.safeParse({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        has_parts: row.has_parts,
+        availability: {
+          id: row.availability_id,
+          total: row.total,
+          maintenance: row.maintenance,
+          broken: row.broken,
+        },
+        parts: parsedParts,
+      });
+    } else {
+      parsedRentable = Rentable.safeParse({
+        id: row.id,
+        name: row.name,
+        description: row.description,
+        has_parts: row.has_parts,
+        availability: {
+          id: row.availability_id,
+          total: row.total,
+          maintenance: row.maintenance,
+          broken: row.broken,
+        },
+        parts: null,
+      });
+    }
+
+    if (!parsedRentable.success) {
+      throw new Error(
+        `RentableService getRentables: Validation failed: ${parsedRentable.error.message}`
+      );
+    }
+
+    parsedRentables.push(parsedRentable.data);
+  }
+
+  return parsedRentables;
+}
+
+export async function getRentableById(id: string) {
+  const rentableRow = await RentableModel.getRentableById(id);
+
+  if (rentableRow === undefined) {
+    return rentableRow;
+  }
+
+  let parsedRentable;
+
+  if (rentableRow.has_parts) {
+    const parsedParts = await PartService.getPartsByRentableId(rentableRow.id);
+    parsedRentable = Rentable.safeParse({
+      id: rentableRow.id,
+      name: rentableRow.name,
+      description: rentableRow.description,
+      has_parts: rentableRow.has_parts,
+      availability: {
+        id: rentableRow.availability_id,
+        total: rentableRow.total,
+        maintenance: rentableRow.maintenance,
+        broken: rentableRow.broken,
+      },
+      parts: parsedParts,
+    });
+  } else {
+    parsedRentable = Rentable.safeParse({
+      id: rentableRow.id,
+      name: rentableRow.name,
+      description: rentableRow.description,
+      has_parts: rentableRow.has_parts,
+      availability: {
+        id: rentableRow.availability_id,
+        total: rentableRow.total,
+        maintenance: rentableRow.maintenance,
+        broken: rentableRow.broken,
+      },
+      parts: null,
+    });
+  }
+
+  if (!parsedRentable.success) {
+    throw new Error(
+      `RentableService getRentableById: Validation failed: ${parsedRentable.error.message}`
+    );
+  }
+
+  return parsedRentable.data;
 }
 
 export async function createRentable(
@@ -33,4 +133,63 @@ export async function createRentable(
   }
 
   return parsedResult.data;
+}
+
+export async function updateRentable(
+  parsedRentableUpdate: z.infer<typeof RentableUpdate>
+) {
+  if (
+    parsedRentableUpdate.deleted_parts !== null &&
+    parsedRentableUpdate.deleted_parts.length !== 0
+  ) {
+    for (const partId of parsedRentableUpdate.deleted_parts) {
+      await PartService.deletePart(partId);
+    }
+  }
+
+  if (
+    parsedRentableUpdate.new_parts !== null &&
+    parsedRentableUpdate.new_parts.length !== 0
+  ) {
+    for (const newPart of parsedRentableUpdate.new_parts) {
+      const parsedPart = PartCreate.safeParse({
+        name: newPart.name,
+        description: newPart.description,
+        rentable_id: newPart.rentable_id,
+        quantity: newPart.quantity,
+        availability: newPart.availability,
+      });
+
+      if (!parsedPart.success) {
+        throw new Error(
+          `RentableService updateRentable: Validation failed for new_parts: ${parsedPart.error.message}`
+        );
+      }
+
+      await PartService.createPart(parsedPart.data);
+    }
+  }
+
+  if (
+    parsedRentableUpdate.parts !== null &&
+    parsedRentableUpdate.parts.length !== 0
+  ) {
+    for (const updatedPart of parsedRentableUpdate.parts) {
+      await PartService.updatePart(updatedPart.id, updatedPart);
+    }
+  }
+
+  const updatedRentable = await getRentableById(parsedRentableUpdate.id);
+
+  if (updatedRentable === undefined) {
+    throw new Error(
+      `RentableService updateRentable: 404 not found post update:`
+    );
+  }
+
+  return updatedRentable;
+}
+
+export async function deleteRentable(id: string) {
+  return await RentableModel.deleteRentable(id);
 }

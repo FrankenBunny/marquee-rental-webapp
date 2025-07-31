@@ -92,6 +92,8 @@ export const RentableUpdate = z
       .nullable(),
     has_parts: z.boolean().nullable(),
     parts: z.array(PartUpdate).nullable(),
+    new_parts: z.array(PartCreateRequest).nullable(),
+    deleted_parts: z.array(z.string().uuid()).nullable(),
   })
   .refine((data) => !(data.has_parts && data.parts === null), {
     message: "Rentable: If has_parts, parts must exist.",
@@ -111,7 +113,9 @@ export const RentableUpdate = z
         data.name === null &&
         data.description === null &&
         data.has_parts === null &&
-        data.parts === null
+        data.parts === null &&
+        data.new_parts === null &&
+        data.deleted_parts === null
       ),
     {
       message: "Rentable: update contains no changes, rejected.",
@@ -124,7 +128,11 @@ export const RentableUpdate = z
         data.description === null &&
         data.has_parts === null &&
         data.parts !== null &&
-        data.parts.length === 0
+        data.parts.length === 0 &&
+        data.new_parts !== null &&
+        data.new_parts.length === 0 &&
+        data.deleted_parts !== null &&
+        data.deleted_parts.length === 0
       ),
     {
       message: "Rentable: update contains no changes, rejected.",
