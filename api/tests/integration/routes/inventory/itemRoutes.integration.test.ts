@@ -95,8 +95,6 @@ describe("itemRoutes /GET/:id", () => {
   });
 });
 
-describe.todo("itemRoutes NOT IMPLEMENTED /PUT/:id", () => {});
-
 describe("itemRoutes /PATCH/:id", () => {
   let testId: string;
 
