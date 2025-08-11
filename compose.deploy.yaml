@@ -55,6 +55,7 @@ services:
       - db-data:/var/lib/postgresql/data
       - ./db/01-init.sql:/docker-entrypoint-initdb.d/01-init.sql
       - ./db/02-default_seed.sql:/docker-entrypoint-initdb.d/02-default_seed.sql
+      - ./db/03-development_seed.sql:/docker-entrypoint-initdb.d/03-development_seed.sql
     environment:
       - POSTGRES_DB=${POSTGRES_DB}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
