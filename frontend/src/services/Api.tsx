@@ -8,8 +8,6 @@ async function fetchData(endpoint = '') {
         return;
     }
     
-    console.log("Calling fetchData from:" + API_URL);
-    
     try {
         const response = await fetch(`${API_URL}/api/${endpoint}`, {
             method: 'GET',
