@@ -64,32 +64,23 @@ export async function getPartsByRentableId(id: string) {
   return parsedParts;
 }
 
+export async function getPartById(id: string) {
+  return await PartModel.getPartById(id);
+}
+
 export async function updatePart(
   id: string,
   parsedPartUpdate: z.infer<typeof PartUpdate>
 ) {
-  const partData = await PartModel.updatePart(id, parsedPartUpdate);
-  const parsedPart = Part.safeParse({
-    id: partData.id,
-    name: partData.name,
-    description: partData.description,
-    quantity: partData.quantity,
-    availability: {
-      id: partData.availability_id,
-      total: partData.total,
-      maintenance: partData.maintenance,
-      broken: partData.broken,
-    },
-    rentable_id: partData.rentable_id,
-  });
+  await PartModel.updatePart(id, parsedPartUpdate);
 
-  if (!parsedPart.success) {
-    throw new Error(
-      `PartService updatePart: Validation failed: ${parsedPart.error}`
-    );
+  const updatedPart = await getPartById(id);
+
+  if (updatedPart === undefined) {
+    throw new Error(`PartService updatePart: 404 not found post update:`);
   }
 
-  return parsedPart.data;
+  return updatedPart;
 }
 
 export async function deletePart(id: string) {

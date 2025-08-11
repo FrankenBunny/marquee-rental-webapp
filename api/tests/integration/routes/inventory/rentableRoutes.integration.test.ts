@@ -447,156 +447,75 @@ describe("rentableRoutes /PATCH/:id", () => {
   });
 
   test("should return 400 if missing changes", async () => {
-    const testId = "a3bb189e-8bf9-3888-9912-ace4e6543002";
-    const result = await request(app).patch(`${endpoint}/${testId}`);
-
-    expect(result.statusCode).toBe(404);
-  });
-
-  test("should return 200 if removing parts with valid input", async () => {
     const name = "TestRentable /POST";
     const description = "Test description.";
-    const part_name = "TestPart /POST";
 
-    const post_result = await request(app)
-      .post(endpoint)
-      .send({
-        name: name,
-        description: description,
-        has_parts: true,
-        availability: null,
-        parts: [
-          {
-            name: part_name,
-            description: description,
-            quantity: 4,
-            availability: null,
-          },
-        ],
-      });
+    const post_result = await request(app).post(endpoint).send({
+      name: name,
+      description: description,
+      availability: null,
+      has_parts: false,
+      parts: null,
+    });
 
     const testId = post_result.body.id;
-    const partId = post_result.body.parts[0].id;
 
-    const result = await request(app)
-      .patch(`${endpoint}/${testId}`)
-      .send({
-        name: null,
-        description: null,
-        has_parts: false,
-        parts: null,
-        deleted_parts: [partId],
-        new_parts: null,
-      });
+    const result = await request(app).patch(`${endpoint}/${testId}`).send({
+      id: testId,
+      name: null,
+      description: null,
+    });
 
-    expect(result.statusCode).toBe(200);
-    expect(result.body.parts === null || result.body.parts === undefined).toBe(
-      true
-    );
+    expect(result.statusCode).toBe(400);
   });
 
-  test.todo(
-    "should return 200 if adding new parts with valid input",
-    async () => {
-      const name = "TestRentable /POST";
-      const description = "Test description.";
-      const part_name = "TestPart /POST";
+  test("should return 200 when updating name", async () => {
+    const name = "TestRentable /POST";
+    const description = "Test description.";
 
-      const post_result = await request(app)
-        .post(endpoint)
-        .send({
-          name: name,
-          description: description,
-          has_parts: true,
-          availability: null,
-          parts: [
-            {
-              name: part_name,
-              description: description,
-              quantity: 4,
-              availability: null,
-            },
-          ],
-        });
+    const post_result = await request(app).post(endpoint).send({
+      name: name,
+      description: description,
+      availability: null,
+      has_parts: false,
+      parts: null,
+    });
 
-      const testId = post_result.body.id;
+    const testId = post_result.body.id;
 
-      const result = await request(app)
-        .patch(`${endpoint}/${testId}`)
-        .send({
-          id: "a3bb189e-8bf9-3888-9912-ace4e6543002",
-          name: null,
-          description: null,
-          has_parts: null,
-          parts: null,
-          deleted_parts: null,
-          new_parts: [
-            {
-              name: part_name + "123",
-              description: description,
-              quantity: 4,
-              availability: null,
-              rentable_id: testId,
-            },
-          ],
-        });
+    const result = await request(app).patch(`${endpoint}/${testId}`).send({
+      id: testId,
+      name: "updated",
+      description: null,
+    });
 
-      console.error(result.body);
-      expect(result.statusCode).toBe(200);
-      expect(Array.isArray(result.body.parts)).toBe(true);
-      expect(result.body.parts.length).toBe(2);
-    }
-  );
+    expect(result.statusCode).toBe(200);
+    expect(result.body.name).toBe("updated");
+  });
 
-  test.todo(
-    "should return 200 if updating parts with valid input",
-    async () => {
-      const name = "TestRentable /POST";
-      const description = "Test description.";
-      const part_name = "TestPart /POST";
+  test("should return 200 when updating description", async () => {
+    const name = "TestRentable /POST";
+    const description = "Test description.";
 
-      const post_result = await request(app)
-        .post(endpoint)
-        .send({
-          name: name,
-          description: description,
-          has_parts: true,
-          availability: null,
-          parts: [
-            {
-              name: part_name,
-              description: description,
-              quantity: 4,
-              availability: null,
-            },
-          ],
-        });
+    const post_result = await request(app).post(endpoint).send({
+      name: name,
+      description: description,
+      availability: null,
+      has_parts: false,
+      parts: null,
+    });
 
-      const testId = post_result.body.id;
+    const testId = post_result.body.id;
 
-      const result = await request(app)
-        .patch(`${endpoint}/${testId}`)
-        .send({
-          id: "a3bb189e-8bf9-3888-9912-ace4e6543002",
-          name: null,
-          description: null,
-          has_parts: null,
-          parts: [
-            {
-              name: part_name + "123",
-              description: description,
-              quantity: 4,
-              availability: null,
-            },
-          ],
-          deleted_parts: null,
-          new_parts: null,
-        });
+    const result = await request(app).patch(`${endpoint}/${testId}`).send({
+      id: testId,
+      name: null,
+      description: "updated",
+    });
 
-      //console.log(result.error);
-      expect(result.statusCode).toBe(200);
-    }
-  );
+    expect(result.statusCode).toBe(200);
+    expect(result.body.description).toBe("updated");
+  });
 });
 
 describe("rentableRoutes /DELETE", () => {

@@ -4,6 +4,7 @@ import * as AvailabilityController from "../../controllers/inventory/availabilit
 const router: Router = express.Router();
 
 router.get("/availability/:id", AvailabilityController.getAvailability);
+
 router.patch("/availability/:id", AvailabilityController.updateAvailability);
 
 export default router;

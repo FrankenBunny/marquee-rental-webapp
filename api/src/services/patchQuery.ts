@@ -63,7 +63,7 @@ export const buildPatchQuery = async (
     if (Object.prototype.hasOwnProperty.call(updates, field)) {
       let value = updates[field];
 
-      if (value !== undefined) {
+      if (value !== undefined && value !== null) {
         if (options.transformFields) {
           value = await options.transformFields(field, value);
         }

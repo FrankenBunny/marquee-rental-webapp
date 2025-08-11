@@ -35,6 +35,38 @@ export async function getPartsByRentableId(id: string) {
   return result.rows;
 }
 
+export async function getPartById(id: string) {
+  const result = await db.query(
+    `
+    SELECT 
+        p.id,
+        p.name,
+        p.description,
+        p.quantity,
+        p.rentable_id,
+        a.id as availability_id,
+        a.total,
+        a.maintenance,
+        a.broken
+    FROM part p
+    JOIN availability a
+    ON p.availability_id = a.id
+    WHERE p.id = $1
+    `,
+    [id]
+  );
+
+  if (result.rowCount && result.rowCount > 1) {
+    throw new Error(`PartModel getRentableById: Returned more than 1 row`);
+  }
+
+  if (result.rowCount === 0) {
+    return undefined;
+  }
+
+  return result.rows[0];
+}
+
 export async function createPart(parsedPart: z.infer<typeof PartCreate>) {
   const insert_result = await db.query(
     `
@@ -99,7 +131,7 @@ export async function updatePart(
 ) {
   const patchQueryResult = await buildPatchQuery(id, parsedPart, {
     tableName: "part",
-    allowedFields: ["name", "description", "quantity", "availability"],
+    allowedFields: ["name", "description", "quantity"],
     transformFields: (field, value) => {
       if (typeof value === "string") {
         return value.trim();

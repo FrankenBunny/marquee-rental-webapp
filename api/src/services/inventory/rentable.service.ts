@@ -7,7 +7,6 @@ import {
   RentableCreateResponse,
   RentableUpdate,
 } from "../../schemas/inventory/rentable.schema.js";
-import { PartCreate } from "../../schemas/inventory/part.schema.js";
 
 export async function getRentables() {
   const rentableRows = await RentableModel.getAllRentables();
@@ -138,46 +137,10 @@ export async function createRentable(
 export async function updateRentable(
   parsedRentableUpdate: z.infer<typeof RentableUpdate>
 ) {
-  if (
-    parsedRentableUpdate.deleted_parts !== null &&
-    parsedRentableUpdate.deleted_parts.length !== 0
-  ) {
-    for (const partId of parsedRentableUpdate.deleted_parts) {
-      await PartService.deletePart(partId);
-    }
-  }
-
-  if (
-    parsedRentableUpdate.new_parts !== null &&
-    parsedRentableUpdate.new_parts.length !== 0
-  ) {
-    for (const newPart of parsedRentableUpdate.new_parts) {
-      const parsedPart = PartCreate.safeParse({
-        name: newPart.name,
-        description: newPart.description,
-        rentable_id: newPart.rentable_id,
-        quantity: newPart.quantity,
-        availability: newPart.availability,
-      });
-
-      if (!parsedPart.success) {
-        throw new Error(
-          `RentableService updateRentable: Validation failed for new_parts: ${parsedPart.error.message}`
-        );
-      }
-
-      await PartService.createPart(parsedPart.data);
-    }
-  }
-
-  if (
-    parsedRentableUpdate.parts !== null &&
-    parsedRentableUpdate.parts.length !== 0
-  ) {
-    for (const updatedPart of parsedRentableUpdate.parts) {
-      await PartService.updatePart(updatedPart.id, updatedPart);
-    }
-  }
+  await RentableModel.updateRentable(
+    parsedRentableUpdate.id,
+    parsedRentableUpdate
+  );
 
   const updatedRentable = await getRentableById(parsedRentableUpdate.id);
 

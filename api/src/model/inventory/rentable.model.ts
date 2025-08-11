@@ -1,6 +1,10 @@
 import type z from "zod";
 import db from "../../db/client.js";
-import { RentableCreateRequest } from "../../schemas/inventory/rentable.schema.js";
+import {
+  RentableCreateRequest,
+  RentableUpdate,
+} from "../../schemas/inventory/rentable.schema.js";
+import { buildPatchQuery } from "../../services/patchQuery.js";
 
 export async function getAllRentables() {
   const result = await db.query(
@@ -107,6 +111,33 @@ export async function createRentable(
   );
 
   return full_result.rows[0];
+}
+
+export async function updateRentable(
+  id: string,
+  parsedRentable: z.infer<typeof RentableUpdate>
+) {
+  const patchQueryResult = await buildPatchQuery(id, parsedRentable, {
+    tableName: "rentable",
+    allowedFields: ["name", "description", "has_parts"],
+    transformFields: (field, value) => {
+      if (typeof value === "string") {
+        return value.trim();
+      }
+      return value;
+    },
+  });
+
+  if (!patchQueryResult) {
+    throw new Error("No valid fields to update");
+  }
+
+  const result = await db.query(
+    patchQueryResult.query,
+    patchQueryResult.values
+  );
+
+  return result.rows[0];
 }
 
 export async function deleteRentable(id: string) {

@@ -162,3 +162,26 @@ CREATE TRIGGER on_part_insert_update_rentable
 AFTER INSERT ON part
 FOR EACH ROW
 EXECUTE FUNCTION update_rentable_has_parts();
+
+
+CREATE OR REPLACE FUNCTION update_rentable_has_parts_removal()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM part
+        WHERE rentable_id = OLD.rentable_id
+    ) THEN
+        UPDATE rentable
+        SET has_parts = FALSE
+        WHERE id = OLD.rentable_id;
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER on_part_delete_update_rentable
+AFTER DELETE ON part
+FOR EACH ROW
+EXECUTE FUNCTION update_rentable_has_parts_removal();

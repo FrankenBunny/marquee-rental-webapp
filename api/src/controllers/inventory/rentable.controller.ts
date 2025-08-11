@@ -9,13 +9,6 @@ import {
 } from "../../schemas/inventory/rentable.schema.js";
 import { Part, PartCreate } from "../../schemas/inventory/part.schema.js";
 
-/**
- * Validate the POST request body and create a new Rentable
- *
- * @param req
- * @param res
- * @param next
- */
 export async function createRentable(
   req: Request,
   res: Response,
@@ -199,10 +192,6 @@ export async function updateRentable(
       id: id,
       name: req.body.name ?? null,
       description: req.body.description ?? null,
-      has_parts: req.body.has_parts ?? null,
-      parts: req.body.parts ?? null,
-      new_parts: req.body.new_parts ?? null,
-      deleted_parts: req.body.deleted_parts ?? null,
     });
 
     if (!parsedRentableUpdate.success) {

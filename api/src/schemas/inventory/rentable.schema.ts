@@ -3,7 +3,7 @@ import {
   AvailabilityCreate,
   AvailabilitySchema,
 } from "./availability.schema.js";
-import { Part, PartCreateRequest, PartUpdate } from "./part.schema.js";
+import { Part, PartCreateRequest } from "./part.schema.js";
 
 export const Rentable = z
   .object({
@@ -90,51 +90,7 @@ export const RentableUpdate = z
       .min(1, "Rentable: description must contain at least one character.")
       .max(255, "Rentable: description exceeds limit of 255 characters.")
       .nullable(),
-    has_parts: z.boolean().nullable(),
-    parts: z.array(PartUpdate).nullable(),
-    new_parts: z.array(PartCreateRequest).nullable(),
-    deleted_parts: z.array(z.string().uuid()).nullable(),
   })
-  .refine((data) => !(data.has_parts && data.parts === null), {
-    message: "Rentable: If has_parts, parts must exist.",
-    path: ["parts"],
-  })
-  .refine(
-    (data) =>
-      !(data.has_parts && data.parts !== null && data.parts.length == 0),
-    {
-      message: "Rentable: If has_parts, parts may not be empty array.",
-      path: ["parts"],
-    }
-  )
-  .refine(
-    (data) =>
-      !(
-        data.name === null &&
-        data.description === null &&
-        data.has_parts === null &&
-        data.parts === null &&
-        data.new_parts === null &&
-        data.deleted_parts === null
-      ),
-    {
-      message: "Rentable: update contains no changes, rejected.",
-    }
-  )
-  .refine(
-    (data) =>
-      !(
-        data.name === null &&
-        data.description === null &&
-        data.has_parts === null &&
-        data.parts !== null &&
-        data.parts.length === 0 &&
-        data.new_parts !== null &&
-        data.new_parts.length === 0 &&
-        data.deleted_parts !== null &&
-        data.deleted_parts.length === 0
-      ),
-    {
-      message: "Rentable: update contains no changes, rejected.",
-    }
-  );
+  .refine((data) => !(data.name === null && data.description === null), {
+    message: "Rentable: update contains no changes, rejected.",
+  });
