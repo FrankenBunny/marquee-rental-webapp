@@ -5,7 +5,7 @@ on:
     branches: [ main ]
 
 jobs:
-  deploy:
+  deploy-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -14,14 +14,14 @@ jobs:
       env:
         PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
       run:
-        echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
+        echo "$PRIVATE_KEY" > development-server-main.pem && chmod 600 development-server-main.pem
 
     - name: Clone repository
       env:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+        ssh -o StrictHostKeyChecking=no -i "development-server-main.pem" ${USER}@${HOST} '
         echo "Current directory: $(pwd)"
         echo "Listing home directory:"
         ls -la ~
@@ -50,6 +50,7 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
         FRONTEND_PORT: ${{ secrets.FRONTEND_PORT }}
+        FRONTEND_ORIGIN: ${{ secrets.FRONTEND_ORIGIN }}
         API_PORT: ${{ secrets.API_PORT }}
         DB_PORT: ${{ secrets.DB_PORT }}
         POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
@@ -59,6 +60,7 @@ jobs:
       run: |
         touch .env
         echo "FRONTEND_PORT=${{ secrets.FRONTEND_PORT }}" > .env
+        echo "FRONTEND_ORIGIN=${{ secrets.FRONTEND_ORIGIN }}" >> .env
         echo "API_PORT=${{ secrets.API_PORT }}" >> .env
         echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
         echo "VITE_API_URL"=${{ secrets.VITE_API_URL }} >>.env
@@ -68,14 +70,15 @@ jobs:
         echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
         echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
         
-        scp -v -i github-ec2.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/.env
+        scp -v -i development-server-main.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/.env
+        scp -v -i development-server-main.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/frontend/.env
 
     - name: Cleanup compose
       env:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i development-server-main.pem ${USER}@${HOST} bash -s << 'EOF'
       
         cd marquee-rental-webapp || exit 1
 
@@ -91,7 +94,7 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << EOF
+        ssh -o StrictHostKeyChecking=no -i development-server-main.pem ${USER}@${HOST} bash -s << EOF
         
         cd marquee-rental-webapp
 
@@ -108,4 +111,5 @@ jobs:
     - name: Remove temporary files
       run: |
         rm -f .env
-        rm -f github-ec2.pem
+        rm -f frontend/.env
+        rm -f development-server-main.pem

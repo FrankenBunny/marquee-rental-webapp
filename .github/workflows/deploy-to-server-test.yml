@@ -2,7 +2,7 @@ name: Deploy to EC2
 
 on:
   push:
-    branches: [ 18-implement-api-data-fetching-logic ]
+    branches: [ 9-create-initial-deployment-setup ]
 
 jobs:
   deploy-test:
@@ -14,20 +14,20 @@ jobs:
       env:
         PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
       run:
-        echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
+        echo "$PRIVATE_KEY" > development-server-main.pem && chmod 600 development-server-main.pem
 
     - name: Clone repository
       env:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
+        ssh -o StrictHostKeyChecking=no -i "development-server-main.pem" ${USER}@${HOST} '
         echo "Current directory: $(pwd)"
         echo "Listing home directory:"
         ls -la ~
 
         REPO_URL="https://github.com/FrankenBunny/marquee-rental-webapp"
-        BRANCH="18-implement-api-data-fetching-logic"
+        BRANCH="9-create-initial-deployment-setup"
         REPO_DIR="$HOME/marquee-rental-webapp"
 
         if [ -d "$REPO_DIR/.git" ]; then
@@ -70,14 +70,15 @@ jobs:
         echo "POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}" >> .env
         echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
         
-        scp -v -i github-ec2.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/.env
+        scp -v -i development-server-main.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/.env
+        scp -v -i development-server-main.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/frontend/.env
 
     - name: Cleanup compose
       env:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i development-server-main.pem ${USER}@${HOST} bash -s << 'EOF'
       
         cd marquee-rental-webapp || exit 1
 
@@ -93,7 +94,7 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} bash -s << EOF
+        ssh -o StrictHostKeyChecking=no -i development-server-main.pem ${USER}@${HOST} bash -s << EOF
         
         cd marquee-rental-webapp
 
@@ -110,4 +111,5 @@ jobs:
     - name: Remove temporary files
       run: |
         rm -f .env
-        rm -f github-ec2.pem
+        rm -f frontend/.env
+        rm -f development-server-main.pem
