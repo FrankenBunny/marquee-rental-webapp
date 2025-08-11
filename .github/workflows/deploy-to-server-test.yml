@@ -71,6 +71,7 @@ jobs:
         echo "POSTGRES_USER=${{ secrets.POSTGRES_USER }}" >> .env
         
         scp -v -i development-server-main.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/.env
+        scp -v -i development-server-main.pem -o StrictHostKeyChecking=no .env ${USER}@${HOST}:~/marquee-rental-webapp/frontend/.env
 
     - name: Cleanup compose
       env:
@@ -110,4 +111,5 @@ jobs:
     - name: Remove temporary files
       run: |
         rm -f .env
+        rm -f frontend/.env
         rm -f development-server-main.pem
