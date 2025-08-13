@@ -56,7 +56,7 @@ interface ButtonProps {
 }
 
 function Button({ onClick, background, outline, variant, label }: ButtonProps) {
-  var className = "reusable-button ";
+  let className = "reusable-button ";
 
   if (background) {
     className += variant + "-button";

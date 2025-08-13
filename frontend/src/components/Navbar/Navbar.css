@@ -1,0 +1,41 @@
+/* Navbar.css */
+.navbar {
+  width: 100%;
+  background-color: var(--color-mblue-600);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; /* allow items to wrap on small screens */
+  gap: 0.75rem;
+}
+
+.navbar button {
+  background-color: var(--color-mblue-400);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 1rem;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.navbar button:hover {
+  background-color: var(--color-mblue-300);
+}
+
+/* Mobile layout: buttons stack vertically */
+@media (max-width: 600px) {
+  .navbar-content {
+    justify-content: center;
+  }
+}

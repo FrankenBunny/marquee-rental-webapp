@@ -1,5 +1,4 @@
-/*
-.user-dashboard {
+.display-dashboard {
     background-color: var(--color-mneutral-100);
     padding: 10%;
     display: flex;
@@ -7,4 +6,3 @@
     border-radius: 10%;
     gap: 1.5rem;
 }
-    */

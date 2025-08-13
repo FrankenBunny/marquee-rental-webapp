@@ -1,0 +1,7 @@
+.page-wrapper {
+  display: flex;
+  justify-content: center; /* center the form horizontally */
+  padding: 2rem 1rem;       /* some breathing room */
+  width: 100%;
+  box-sizing: border-box;  /* include padding in width */
+}

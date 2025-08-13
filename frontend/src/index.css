@@ -61,12 +61,28 @@
 }
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  font-family: inherit;
+  background-color: var(--color-mblue-100);
   min-height: 100vh;
 }
+
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+main {
+  padding: 1.5rem;
+  margin: 0 auto;
+}
+
+/* Table container responsive */
+.table-wrapper {
+  overflow-x: auto; /* allow horizontal scroll if table is too wide */
+}
+
 
   /* DEFAULT REACT VITE CSS BELOW
   :root {
