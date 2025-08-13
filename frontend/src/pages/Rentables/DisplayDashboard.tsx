@@ -1,12 +1,12 @@
-import Table from "../../components/Table/Table"
 import Button from "../../components/Button/Button"
-import './UserDashboard.css'
+import './DisplayDashboard.css'
+import RentablesTable from "../../components/Table/RentablesTable"
 
 function DisplayDashboard() {
     return (
         <>
             <div className="display-dashboard">
-                <Table endpoint="rentables" />
+                <RentablesTable />
                 <Button 
                     variant="primary"
                     label="A button with no function!" />

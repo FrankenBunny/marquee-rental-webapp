@@ -1,31 +1,67 @@
 import { useState } from "react";
 import sendData from "../../services/sendData";
+import fetchData from "../../services/Api";
 import "./CreateItem.css";
 import Button from "../Button/Button";
 
 export default function CreateItem() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [quantity, setQuantity] = useState(1);
-  const [category, setCategory] = useState("");
+  const [createdItem, setCreatedItem] = useState<{ name: string; description: string | null } | null>(null);
 
   const handleSubmit = async () => {
-    // Only send fields your backend expects
+    // Validate name length
+    if (!name.trim()) {
+      alert("Name is required.");
+      return;
+    }
+    if (name.length > 32) {
+      alert("Name cannot exceed 32 characters.");
+      return;
+    }
+    if (description.length > 255) {
+      alert("Description cannot exceed 255 characters.");
+      return;
+    }
+
     const payload = {
-      name,
-      description
+      name: name.trim(),
+      description: description.trim() || null, // conform to nullable
     };
 
-    const result = await sendData("inventory/item", "POST", payload);
-    if (result) {
+    try {
+      const result = await sendData("inventory/item", "POST", payload);
+
+      if (!result) {
+        alert("Failed to create item.");
+        return;
+      }
+
       alert("Item created successfully!");
+
+      // Fetch full item details
+      try {
+        const itemDetails = await fetchData(`inventory/item/${result.id}`);
+        if (itemDetails) {
+          setCreatedItem({
+            name: itemDetails.name,
+            description: itemDetails.description,
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching created item:", err);
+        setCreatedItem({
+          name: payload.name,
+          description: payload.description,
+        });
+      }
+
       // Reset form fields
       setName("");
       setDescription("");
-      setQuantity(1);
-      setCategory("");
-    } else {
-      alert("Failed to create item.");
+    } catch (err) {
+      console.error("Error creating item:", err);
+      alert("Failed to create item due to server error.");
     }
   };
 
@@ -44,26 +80,18 @@ export default function CreateItem() {
       <input
         value={description}
         onChange={(e) => setDescription(e.target.value)}
-        placeholder="Enter description"
-      />
-
-      {/* These fields are not sent yet, but kept in the form */}
-      <label>Quantity:</label>
-      <input
-        type="number"
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
-        min="1"
-      />
-
-      <label>Category:</label>
-      <input
-        value={category}
-        onChange={(e) => setCategory(e.target.value)}
-        placeholder="Enter category"
+        placeholder="Enter description (optional)"
       />
 
       <Button variant="primary" label="Submit Item" onClick={handleSubmit} />
+
+      {createdItem && (
+        <div style={{ marginTop: "2rem", padding: "1rem", border: "1px solid #ccc" }}>
+          <h3>Created Item Details:</h3>
+          <p><strong>Name:</strong> {createdItem.name}</p>
+          <p><strong>Description:</strong> {createdItem.description || "None"}</p>
+        </div>
+      )}
     </div>
   );
 }

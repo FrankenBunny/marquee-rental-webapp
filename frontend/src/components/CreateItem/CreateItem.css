@@ -8,6 +8,8 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   box-sizing: border-box; /* important */
+  display: flex;
+  flex-direction: column;
 }
 
 .createitem-wrapper h2 {
@@ -88,3 +90,6 @@ input[type="number"]:focus {
   box-shadow: 0 0 8px rgba(0, 77, 155, 0.4);
 }
 
+#last-input {
+  margin-bottom: 2rem; /* remove bottom margin for last input */
+}
