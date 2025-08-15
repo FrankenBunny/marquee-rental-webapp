@@ -1,0 +1,106 @@
+/* CreateItem.css */
+
+.createitem-wrapper {
+  max-width: 600px;       /* or smaller, like 450px */
+  width: 100%;            /* take full width inside max-width */
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-sizing: border-box; /* important */
+  display: flex;
+  flex-direction: column;
+}
+
+.createitem-wrapper h2 {
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  font-size: 1.8rem;
+  text-align: center;
+  color: var(--color-mblue-700);
+}
+
+label {
+  display: block;
+  margin-bottom: 0.2rem;
+  margin-top: 0.6rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--color-mblue-600);
+}
+
+input[type="text"],
+input[type="number"] {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  margin-bottom: 1.25rem;
+  border: 2px solid var(--color-mblue-300);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  box-sizing: border-box;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+  border-color: var(--color-mblue-500);
+  outline: none;
+  box-shadow: 0 0 6px var(--color-mblue-400);
+}
+
+.button-primary {
+  display: block;
+  width: 100%;
+  background-color: var(--color-mblue-600);
+  color: white;
+  border: none;
+  padding: 0.75rem 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  border-radius: 0.7rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button-primary:hover {
+  background-color: var(--color-mblue-700);
+}
+
+@media (max-width: 480px) {
+  .content-wrapper {
+    padding: 1.5rem 1.5rem;
+    margin: 1rem;
+  }
+}
+
+.createitem-wrapper input {
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  border: 2px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  outline: none;
+  font-family: inherit;
+  background-color: #fff;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.createitem-wrapper input:focus {
+  border-color: var(--color-mblue-500);
+  box-shadow: 0 0 8px rgba(0, 77, 155, 0.4);
+}
+
+#last-input {
+  margin-bottom: 2rem; /* remove bottom margin for last input */
+}
+
+.delete-btn {
+  background-color: var(--color-mred-400);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}

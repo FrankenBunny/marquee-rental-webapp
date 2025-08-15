@@ -1,15 +1,15 @@
+/* UserDashboard.tsx
+ * This component displays the user dashboard with a table of rentable items.
+ */
+
 import Table from "../../components/Table/Table"
-import Button from "../../components/Button/Button"
 import './UserDashboard.css'
 
 function UserDashboard() {
     return (
         <>
             <div className="user-dashboard">
-                <Table endpoint="user" />
-                <Button 
-                    variant="primary"
-                    label="A button with no function!" />
+                <Table endpoint="inventory/rentable" />
             </div>
         </>
     )

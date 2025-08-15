@@ -1,0 +1,94 @@
+.viewpage-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    background-color: var(--color-mblue-50);
+    min-height: 100vh;
+}
+
+.viewpage-container {
+    max-width: 800px;
+    width: 100%;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+}
+
+.viewpage-title {
+    margin-bottom: 20px;
+    color: var(--color-mblue-500);
+    text-align: center;
+}
+
+.back-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 8px 16px;
+    background-color: var(--color-mblue-400);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.back-btn:hover {
+    background-color: var(--color-mblue-500);
+}
+
+/* Reuse same styles as your main table */
+.reusable-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.reusable-table th,
+.reusable-table td {
+    padding: 12px 16px;
+    text-align: left;
+}
+
+.reusable-table thead {
+    background-color: var(--color-mblue-500);
+    color: white;
+}
+
+.reusable-table tbody tr:nth-child(odd) {
+    background-color: var(--color-mblue-200);
+}
+
+.reusable-table tbody tr:nth-child(even) {
+    background-color: var(--color-mblue-100);
+}
+
+.reusable-table tbody tr:hover {
+    background-color: var(--color-mblue-400);
+    color: white;
+}
+
+.mini-table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.mini-table th,
+.mini-table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.mini-table th {
+  background-color: var(--color-mblue-500);
+  font-weight: 600;
+}
+
+.mini-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}

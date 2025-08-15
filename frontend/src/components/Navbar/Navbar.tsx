@@ -11,7 +11,6 @@ function Navbar() {
         <div className="nav-links">
           <Button variant="primary" label="Home" onClick={() => navigate("/")} />
           <Button variant="primary" label="New Entry" onClick={() => navigate("/create")} />
-          <Button variant="primary" label="New Rentable" onClick={() => navigate("createRentable")} />
         </div>
       </div>
     </nav>

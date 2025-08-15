@@ -1,36 +1,36 @@
-.reusable-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: Arial, sans-serif;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    overflow: hidden;
+.action-buttons {
+    display: flex;
+    gap: 6px;
 }
 
-.reusable-table th,
-.reusable-table td {
-    padding: 8px 12px;
-    text-align: left;
+.icon-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
 }
 
-.reusable-table th:hover{
-    cursor: default;
-}
-
-.reusable-table thead {
-    background-color: var(--color-mblue-500);
+/* View button style */
+.view-btn {
+    background-color: var(--color-mblue-400);
     color: white;
 }
 
-.reusable-table tbody {
-    background-color: var(--color-mblue-200);
-}
-
-.reusable-table tbody tr:nth-child(even) {
-    background-color: var(--color-mblue-100);
-}
-
-.reusable-table tbody tr:hover {
+.view-btn:hover {
     background-color: var(--color-mblue-500);
-    cursor: pointer;
+}
+
+/* Edit button style */
+.edit-btn {
+    background-color: var(--color-mgreen-400);
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: var(--color-mgreen-500);
 }
