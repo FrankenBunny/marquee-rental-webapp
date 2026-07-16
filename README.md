@@ -22,10 +22,6 @@ Web application for a marquee rental service company.  Developed for internal us
     2. [(IMS) Inventory Management System](#inventory-management-system)
 3. [Potential Future Features](#potential-future-features)
 
-## Project Description
-
-lorem ipsum...
-
 ## For Developers
 This section covers neccessary information for further development of the project.
 
